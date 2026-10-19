@@ -33,35 +33,60 @@
 
         header {
             text-align: center;
-            margin-top: 10px;
+            margin-top: 8px;
             width: 100%;
         }
 
         h1 {
-            font-size: 20px;
-            margin: 0;
+            font-size: 18px;
+            margin: 0 0 4px 0;
             letter-spacing: 1px;
         }
 
-        .name-box {
-            margin: 6px 15px;
+        .config-box {
             display: flex;
             justify-content: center;
-            align-items: center;
             gap: 6px;
-            flex-wrap: wrap;
+            margin: 4px 10px;
         }
 
         .name-input {
             background: rgba(255, 255, 255, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.3);
             color: white;
-            padding: 6px 10px;
-            border-radius: 12px;
+            padding: 5px 10px;
+            border-radius: 10px;
             font-size: 12px;
             text-align: center;
             outline: none;
-            width: 140px;
+            width: 130px;
+        }
+
+        /* Pulsanti Stanze Rapide */
+        .rooms-row {
+            display: flex;
+            justify-content: center;
+            gap: 4px;
+            margin: 4px 5px;
+            flex-wrap: wrap;
+        }
+
+        .room-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #aaa;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .room-btn.active {
+            background: #2ed573;
+            border-color: #2ed573;
+            color: white;
+            font-weight: bold;
         }
 
         .stats-grid {
@@ -70,10 +95,10 @@
             gap: 4px;
             font-size: 11px;
             opacity: 0.9;
-            margin: 6px 10px;
+            margin: 4px 10px;
             background: rgba(255, 255, 255, 0.08);
-            padding: 6px;
-            border-radius: 10px;
+            padding: 4px;
+            border-radius: 8px;
         }
 
         .stat-box {
@@ -83,18 +108,18 @@
         .controls-row {
             display: flex;
             justify-content: center;
-            gap: 6px;
-            margin: 5px 0;
+            gap: 5px;
+            margin: 3px 0;
             flex-wrap: wrap;
         }
 
-        .sound-btn, .toggle-btn, .premium-btn {
+        .sound-btn, .toggle-btn, .premium-btn, .reset-btn {
             background: rgba(255, 255, 255, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.2);
             color: white;
-            padding: 5px 10px;
-            border-radius: 15px;
-            font-size: 11px;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 10px;
             cursor: pointer;
             transition: all 0.2s;
         }
@@ -111,6 +136,11 @@
             font-weight: bold;
         }
 
+        .reset-btn {
+            background: rgba(231, 76, 60, 0.3);
+            border-color: #e74c3c;
+        }
+
         .tap-container {
             display: flex;
             flex-direction: column;
@@ -123,12 +153,12 @@
 
         .sender-alert {
             position: absolute;
-            top: 10px;
-            background: rgba(255, 71, 87, 0.9);
+            top: 5px;
+            background: rgba(255, 71, 87, 0.95);
             color: white;
-            padding: 10px 20px;
-            border-radius: 20px;
-            font-size: 15px;
+            padding: 8px 16px;
+            border-radius: 16px;
+            font-size: 14px;
             font-weight: bold;
             box-shadow: 0 4px 15px rgba(0,0,0,0.5);
             opacity: 0;
@@ -145,14 +175,14 @@
         }
 
         .tap-button {
-            width: 160px;
-            height: 160px;
+            width: 150px;
+            height: 150px;
             border-radius: 50%;
             background: linear-gradient(135deg, #ff4757, #ff6b81);
             border: none;
             box-shadow: 0 10px 30px rgba(255, 71, 87, 0.4);
             color: white;
-            font-size: 18px;
+            font-size: 17px;
             font-weight: bold;
             cursor: pointer;
             display: flex;
@@ -179,7 +209,7 @@
 
         .floating-emoji {
             position: absolute;
-            font-size: 24px;
+            font-size: 26px;
             animation: floatUp 2s ease-out forwards;
         }
 
@@ -189,22 +219,22 @@
         }
 
         .footer {
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             text-align: center;
             width: 100%;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 6px;
+            gap: 5px;
         }
 
         .whatsapp-btn {
             background: #25D366;
             color: white;
             border: none;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 13px;
+            padding: 6px 14px;
+            border-radius: 18px;
+            font-size: 12px;
             font-weight: bold;
             cursor: pointer;
             text-decoration: none;
@@ -213,14 +243,14 @@
 
         .ad-banner {
             width: 100%;
-            max-width: 320px;
-            height: 50px;
+            max-width: 300px;
+            height: 45px;
             background: rgba(255, 255, 255, 0.05);
             border: 1px dashed rgba(255, 255, 255, 0.2);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 11px;
+            font-size: 10px;
             opacity: 0.6;
             border-radius: 6px;
         }
@@ -231,9 +261,16 @@
     <header>
         <h1>TOC-TOC 💗</h1>
         
-        <div class="name-box">
+        <div class="config-box">
             <input type="text" id="usernameInput" class="name-input" placeholder="Il tuo Nome" onchange="saveConfig()">
-            <input type="text" id="roomInput" class="name-input" placeholder="Stanza (es: generale)" onchange="updateRoomListener()">
+            <input type="text" id="roomInput" class="name-input" placeholder="Stanza Personalizzata" onchange="selectCustomRoom()">
+        </div>
+
+        <div class="rooms-row">
+            <button class="room-btn" onclick="setRoom('generale')">🌐 Generale</button>
+            <button class="room-btn" onclick="setRoom('moglie')">❤️ Moglie</button>
+            <button class="room-btn" onclick="setRoom('sorella')">👧 Sorella</button>
+            <button class="room-btn" onclick="setRoom('amico')">🥊 Amico</button>
         </div>
 
         <div class="stats-grid">
@@ -251,8 +288,8 @@
 
         <div class="controls-row">
             <button id="soundToggle" class="toggle-btn active" onclick="toggleSoundState()">🔊 Audio: ON</button>
-            <button id="vibeToggle" class="toggle-btn active" onclick="toggleVibeState()">📳 Vibrazione: ON</button>
             <button class="premium-btn" onclick="openPremium()">⭐ Premium</button>
+            <button class="reset-btn" onclick="resetStats()">🗑️ Azzeratori</button>
         </div>
     </header>
 
@@ -278,10 +315,8 @@
 
         let currentSound = 'porta';
         let soundEnabled = true;
-        let vibeEnabled = true;
         let currentRoomRef = null;
 
-        // Gestione Dati Salvati
         let storedName = localStorage.getItem('toctoc_username') || '';
         let storedRoom = localStorage.getItem('toctoc_room') || 'generale';
 
@@ -290,13 +325,33 @@
 
         function saveConfig() {
             let nameVal = document.getElementById('usernameInput').value.trim();
-            let roomVal = document.getElementById('roomInput').value.trim().toLowerCase() || 'generale';
             localStorage.setItem('toctoc_username', nameVal);
-            localStorage.setItem('toctoc_room', roomVal);
             updateWhatsappLink();
         }
 
-        // Gestione Statistiche
+        function setRoom(roomName) {
+            document.getElementById('roomInput').value = roomName;
+            localStorage.setItem('toctoc_room', roomName);
+            updateRoomButtonsUI(roomName);
+            updateRoomListener();
+        }
+
+        function selectCustomRoom() {
+            let roomVal = document.getElementById('roomInput').value.trim().toLowerCase() || 'generale';
+            localStorage.setItem('toctoc_room', roomVal);
+            updateRoomButtonsUI(roomVal);
+            updateRoomListener();
+        }
+
+        function updateRoomButtonsUI(activeRoom) {
+            document.querySelectorAll('.room-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if(btn.textContent.toLowerCase().includes(activeRoom)) {
+                    btn.classList.add('active');
+                }
+            });
+        }
+
         let stats = JSON.parse(localStorage.getItem('toctoc_stats')) || {
             day: 0, week: 0, month: 0, year: 0, total: 0,
             lastDay: new Date().getDate()
@@ -318,6 +373,14 @@
             localStorage.setItem('toctoc_stats', JSON.stringify(stats));
         }
 
+        function resetStats() {
+            if(confirm("Vuoi azzerare tutte le statistiche?")) {
+                stats = { day: 0, week: 0, month: 0, year: 0, total: 0, lastDay: new Date().getDate() };
+                saveStats();
+                updateStatsDisplay();
+            }
+        }
+
         function setSound(type) {
             currentSound = type;
             document.querySelectorAll('.sound-btn').forEach(b => b.classList.remove('active'));
@@ -329,13 +392,6 @@
             let btn = document.getElementById('soundToggle');
             btn.innerText = soundEnabled ? "🔊 Audio: ON" : "🔇 Audio: OFF";
             btn.classList.toggle('active', soundEnabled);
-        }
-
-        function toggleVibeState() {
-            vibeEnabled = !vibeEnabled;
-            let btn = document.getElementById('vibeToggle');
-            btn.innerText = vibeEnabled ? "📳 Vibrazione: ON" : "📴 Vibrazione: OFF";
-            btn.classList.toggle('active', vibeEnabled);
         }
 
         function openPremium() {
@@ -359,10 +415,6 @@
                 setTimeout(() => playTone(600, 0.08, 'sine'), 80);
                 setTimeout(() => playTone(880, 0.15, 'sine'), 160);
             }
-
-            if (vibeEnabled && navigator.vibrate) {
-                navigator.vibrate(70);
-            }
         }
 
         function playTone(freq, duration, type) {
@@ -385,7 +437,7 @@
             let roomName = document.getElementById('roomInput').value.trim().toLowerCase() || 'generale';
 
             playSound(currentSound);
-            incrementStats();
+            incrementStats(currentSound);
 
             db.ref('rooms/' + roomName).set({
                 sound: currentSound,
@@ -394,7 +446,7 @@
             });
         }
 
-        function incrementStats() {
+        function incrementStats(soundType) {
             stats.day++;
             stats.week++;
             stats.month++;
@@ -405,7 +457,7 @@
 
             if (stats.total % 100 === 0) {
                 triggerRainbowEffect();
-                spawnEmojis();
+                spawnThemeEmojis(soundType);
             }
         }
 
@@ -422,10 +474,19 @@
             }, 300);
         }
 
-        function spawnEmojis() {
+        function spawnThemeEmojis(soundType) {
             const box = document.getElementById('emojiBox');
-            const emojis = ['😂', '❤️', '🔥', '🌟', '🎉', '🥰', '🚀', '😍'];
-            for (let i = 0; i < 15; i++) {
+            let emojis = ['🎉', '🌟', '🔥'];
+            
+            if (soundType === 'cuore') {
+                emojis = ['❤️', '💖', '💘', '💗', '💓', '🥰'];
+            } else if (soundType === 'magia') {
+                emojis = ['✨', '🪄', '🌟', '💫', '⭐'];
+            } else if (soundType === 'porta') {
+                emojis = ['🚪', '🏡', '🔑', '🚪', '🔔'];
+            }
+
+            for (let i = 0; i < 18; i++) {
                 let span = document.createElement('span');
                 span.className = 'floating-emoji';
                 span.innerText = emojis[Math.floor(Math.random() * emojis.length)];
@@ -444,19 +505,21 @@
             document.getElementById('statYear').innerText = stats.year;
         }
 
-        // Ascolto in tempo reale della Stanza Selezionata
         function updateRoomListener() {
             saveConfig();
             let roomName = document.getElementById('roomInput').value.trim().toLowerCase() || 'generale';
 
             if (currentRoomRef) {
-                currentRoomRef.off(); // Stacca l'ascolto della stanza precedente
+                currentRoomRef.off();
             }
 
             currentRoomRef = db.ref('rooms/' + roomName);
             currentRoomRef.on('value', (snapshot) => {
                 const data = snapshot.val();
-                if (data && data.timestamp > Date.now() - 3000) {
+                let myName = document.getElementById('usernameInput').value.trim() || 'Luca';
+                
+                // Mostra il segnale solo se arriva da qualcun altro
+                if (data && data.timestamp > Date.now() - 3000 && data.sender !== myName) {
                     playSound(data.sound || 'porta');
                     
                     let alertBox = document.getElementById('senderAlert');
@@ -473,11 +536,12 @@
 
         function updateWhatsappLink() {
             let roomName = document.getElementById('roomInput').value.trim().toLowerCase() || 'generale';
-            const shareText = encodeURIComponent(`Unisciti alla mia stanza "${roomName}" su Toc-Toc per scambiarci i segnali! Entra qui: https://lucaandrea18.github.io/toctoc/`);
+            const shareText = encodeURIComponent(`Entra nella stanza "${roomName}" su Toc-Toc per scambiarci i segnali! Clicca qui: https://lucaandrea18.github.io/toctoc/`);
             document.getElementById('whatsappShare').href = `https://api.whatsapp.com/send?text=${shareText}`;
         }
 
-        // Inizializza l'ascolto
+        // Avvio iniziale
+        updateRoomButtonsUI(storedRoom);
         updateRoomListener();
     </script>
 </body>
