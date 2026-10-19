@@ -47,15 +47,13 @@
             font-weight: 800;
         }
 
-        /* Caselle Nome e Stanza Grandi */
-        .input-group {
-            display: flex;
-            gap: 8px;
+        /* Nome Utente */
+        .user-box {
             width: 100%;
         }
 
         .main-input {
-            flex: 1;
+            width: 100%;
             background: rgba(255, 255, 255, 0.15);
             border: 2px solid rgba(255, 255, 255, 0.3);
             color: #fff;
@@ -68,34 +66,69 @@
             box-sizing: border-box;
         }
 
-        /* Tasti Stanze */
-        .rooms-row {
+        /* Aggiungi Stanza Fisicamente */
+        .add-room-box {
             display: flex;
-            justify-content: space-between;
             gap: 6px;
             width: 100%;
         }
 
-        .room-btn {
-            flex: 1;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.25);
-            color: #ddd;
-            padding: 8px 2px;
-            border-radius: 10px;
-            font-size: 13px;
+        .add-btn {
+            background: #2ed573;
+            border: none;
+            color: white;
+            padding: 0 16px;
+            border-radius: 12px;
+            font-size: 18px;
             font-weight: bold;
             cursor: pointer;
         }
 
-        .room-btn.active {
-            background: #2ed573;
-            border-color: #2ed573;
-            color: #fff;
-            box-shadow: 0 2px 8px rgba(46, 213, 115, 0.4);
+        /* Lista Stanze Fisiche Salvate */
+        .rooms-container {
+            display: flex;
+            gap: 6px;
+            width: 100%;
+            overflow-x: auto;
+            padding: 4px 0;
+            scroll-behavior: smooth;
         }
 
-        /* Sezione Contatori Dettagliati */
+        .room-chip {
+            background: rgba(255, 255, 255, 0.12);
+            border: 1.5px solid rgba(255, 255, 255, 0.25);
+            color: #ddd;
+            padding: 8px 12px;
+            border-radius: 14px;
+            font-size: 13px;
+            font-weight: bold;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .room-chip.active {
+            background: #ff4757;
+            border-color: #ff4757;
+            color: #fff;
+            box-shadow: 0 3px 10px rgba(255, 71, 87, 0.4);
+        }
+
+        .delete-room {
+            font-size: 11px;
+            opacity: 0.6;
+            margin-left: 2px;
+        }
+
+        .delete-room:hover {
+            opacity: 1;
+            color: #ff6b6b;
+        }
+
+        /* Sezione Contatori */
         .stats-container {
             background: rgba(255, 255, 255, 0.08);
             border: 1px solid rgba(255, 255, 255, 0.15);
@@ -133,7 +166,7 @@
             color: #f1f2f6;
         }
 
-        /* Sezione Suoni e Controlli Grandi */
+        /* Suoni e Controlli */
         .controls-row {
             display: flex;
             justify-content: center;
@@ -268,7 +301,6 @@
             box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
         }
 
-        /* Banner Pubblicitario Spazioso */
         .ad-banner {
             width: 100%;
             max-width: 320px;
@@ -290,17 +322,18 @@
     <header>
         <h1>TOC-TOC 💗</h1>
         
-        <div class="input-group">
+        <div class="user-box">
             <input type="text" id="usernameInput" class="main-input" placeholder="Il tuo Nome" onchange="saveConfig()">
-            <input type="text" id="roomInput" class="main-input" placeholder="Nome Stanza" onchange="selectCustomRoom()">
         </div>
 
-        <div class="rooms-row">
-            <button class="room-btn" onclick="setRoom('generale')">🌐 Generale</button>
-            <button class="room-btn" onclick="setRoom('moglie')">❤️ Moglie</button>
-            <button class="room-btn" onclick="setRoom('sorella')">👧 Sorella</button>
-            <button class="room-btn" onclick="setRoom('amico')">🥊 Amico</button>
+        <!-- Aggiungi Nuova Stanza -->
+        <div class="add-room-box">
+            <input type="text" id="newRoomInput" class="main-input" placeholder="Crea Stanza (es. Famiglia)">
+            <button class="add-btn" onclick="addNewRoom()">+</button>
         </div>
+
+        <!-- Lista Stanze Salvate -->
+        <div class="rooms-container" id="roomsList"></div>
 
         <div class="stats-container">
             <div class="stats-grid">
@@ -353,11 +386,12 @@
         let soundEnabled = true;
         let currentRoomRef = null;
 
+        // Gestione Stanze Salvate nel Telefono
+        let savedRooms = JSON.parse(localStorage.getItem('toctoc_rooms_list')) || ['generale', 'moglie', 'sorella', 'amico'];
+        let activeRoom = localStorage.getItem('toctoc_room') || 'generale';
         let storedName = localStorage.getItem('toctoc_username') || '';
-        let storedRoom = localStorage.getItem('toctoc_room') || 'generale';
 
         document.getElementById('usernameInput').value = storedName;
-        document.getElementById('roomInput').value = storedRoom;
 
         function saveConfig() {
             let nameVal = document.getElementById('usernameInput').value.trim();
@@ -365,30 +399,52 @@
             updateWhatsappLink();
         }
 
-        function setRoom(roomName) {
-            document.getElementById('roomInput').value = roomName;
-            localStorage.setItem('toctoc_room', roomName);
-            updateRoomButtonsUI(roomName);
-            updateRoomListener();
-        }
+        function renderRooms() {
+            const list = document.getElementById('roomsList');
+            list.innerHTML = '';
+            
+            savedRooms.forEach(room => {
+                const chip = document.createElement('div');
+                chip.className = `room-chip ${room === activeRoom ? 'active' : ''}`;
+                chip.onclick = () => selectRoom(room);
 
-        function selectCustomRoom() {
-            let roomVal = document.getElementById('roomInput').value.trim().toLowerCase() || 'generale';
-            localStorage.setItem('toctoc_room', roomVal);
-            updateRoomButtonsUI(roomVal);
-            updateRoomListener();
-        }
-
-        function updateRoomButtonsUI(activeRoom) {
-            document.querySelectorAll('.room-btn').forEach(btn => {
-                btn.classList.remove('active');
-                if(btn.textContent.toLowerCase().includes(activeRoom.substring(0, 3))) {
-                    btn.classList.add('active');
-                }
+                chip.innerHTML = `
+                    <span>🏠 ${room}</span>
+                    ${room !== 'generale' ? `<span class="delete-room" onclick="deleteRoom(event, '${room}')">✕</span>` : ''}
+                `;
+                list.appendChild(chip);
             });
+            localStorage.setItem('toctoc_rooms_list', JSON.stringify(savedRooms));
         }
 
-        // Statistiche estese con contatori per tipo di suono
+        function addNewRoom() {
+            let input = document.getElementById('newRoomInput');
+            let roomName = input.value.trim().toLowerCase();
+            if (roomName && !savedRooms.includes(roomName)) {
+                savedRooms.push(roomName);
+                input.value = '';
+                selectRoom(roomName);
+            }
+        }
+
+        function deleteRoom(e, roomName) {
+            e.stopPropagation();
+            savedRooms = savedRooms.filter(r => r !== roomName);
+            if (activeRoom === roomName) {
+                selectRoom('generale');
+            } else {
+                renderRooms();
+            }
+        }
+
+        function selectRoom(roomName) {
+            activeRoom = roomName;
+            localStorage.setItem('toctoc_room', activeRoom);
+            renderRooms();
+            updateRoomListener();
+        }
+
+        // Statistiche
         let stats = JSON.parse(localStorage.getItem('toctoc_stats')) || {
             day: 0, week: 0, month: 0, year: 0, total: 0,
             porta: 0, cuore: 0, magia: 0,
@@ -472,12 +528,11 @@
 
         function sendTap() {
             let senderName = document.getElementById('usernameInput').value.trim() || 'Qualcuno';
-            let roomName = document.getElementById('roomInput').value.trim().toLowerCase() || 'generale';
 
             playSound(currentSound);
             incrementStats(currentSound);
 
-            db.ref('rooms/' + roomName).set({
+            db.ref('rooms/' + activeRoom).set({
                 sound: currentSound,
                 sender: senderName,
                 timestamp: Date.now()
@@ -554,13 +609,12 @@
 
         function updateRoomListener() {
             saveConfig();
-            let roomName = document.getElementById('roomInput').value.trim().toLowerCase() || 'generale';
 
             if (currentRoomRef) {
                 currentRoomRef.off();
             }
 
-            currentRoomRef = db.ref('rooms/' + roomName);
+            currentRoomRef = db.ref('rooms/' + activeRoom);
             currentRoomRef.on('value', (snapshot) => {
                 const data = snapshot.val();
                 let myName = document.getElementById('usernameInput').value.trim() || 'Luca';
@@ -570,7 +624,7 @@
                     
                     let alertBox = document.getElementById('senderAlert');
                     let name = data.sender || 'Qualcuno';
-                    alertBox.innerText = `TOC-TOC da ${name}!\n(Stanza: ${roomName})`;
+                    alertBox.innerText = `TOC-TOC da ${name}!\n(Stanza: ${activeRoom})`;
                     alertBox.classList.add('show');
                     
                     setTimeout(() => {
@@ -581,12 +635,11 @@
         }
 
         function updateWhatsappLink() {
-            let roomName = document.getElementById('roomInput').value.trim().toLowerCase() || 'generale';
-            const shareText = encodeURIComponent(`Entra nella stanza "${roomName}" su Toc-Toc per scambiarci i segnali! Clicca qui: https://lucaandrea18.github.io/toctoc/`);
+            const shareText = encodeURIComponent(`Entra nella stanza "${activeRoom}" su Toc-Toc per scambiarci i segnali! Clicca qui: https://lucaandrea18.github.io/toctoc/`);
             document.getElementById('whatsappShare').href = `https://api.whatsapp.com/send?text=${shareText}`;
         }
 
-        updateRoomButtonsUI(storedRoom);
+        renderRooms();
         updateRoomListener();
     </script>
 </body>
