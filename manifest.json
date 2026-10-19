@@ -1,0 +1,13 @@
+{
+  "background_color": "#050505",
+  "dir": "ltr",
+  "display": "standalone",
+  "name": "toctoc",
+  "orientation": "any",
+  "scope": "/",
+  "short_name": "toctoc",
+  "start_url": "/",
+  "theme_color": "#ffffff",
+  "description": "Un'app per mandare segnali in tempo reale",
+  "id": "toctoc"
+}
