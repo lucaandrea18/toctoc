@@ -17,7 +17,7 @@
 
         body {
             margin: 0;
-            padding: 10px 14px;
+            padding: 10px 12px;
             background-color: var(--bg-color);
             color: var(--text-color);
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -41,7 +41,7 @@
         }
 
         h1 {
-            font-size: 24px;
+            font-size: 22px;
             margin: 0;
             letter-spacing: 1.5px;
             font-weight: 800;
@@ -57,7 +57,7 @@
             background: rgba(255, 255, 255, 0.15);
             border: 2px solid rgba(255, 255, 255, 0.3);
             color: #fff;
-            padding: 10px;
+            padding: 9px;
             border-radius: 12px;
             font-size: 15px;
             font-weight: bold;
@@ -66,7 +66,7 @@
             box-sizing: border-box;
         }
 
-        /* Aggiungi Stanza Fisicamente */
+        /* Creazione Stanza */
         .add-room-box {
             display: flex;
             gap: 6px;
@@ -79,71 +79,70 @@
             color: white;
             padding: 0 16px;
             border-radius: 12px;
-            font-size: 18px;
+            font-size: 20px;
             font-weight: bold;
             cursor: pointer;
         }
 
-        /* Lista Stanze Fisiche Salvate */
-        .rooms-container {
-            display: flex;
-            gap: 6px;
+        /* Griglia Stanze 4 per Riga */
+        .rooms-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 5px;
             width: 100%;
-            overflow-x: auto;
-            padding: 4px 0;
-            scroll-behavior: smooth;
+            max-height: 140px;
+            overflow-y: auto;
+            padding: 2px 0;
         }
 
         .room-chip {
             background: rgba(255, 255, 255, 0.12);
             border: 1.5px solid rgba(255, 255, 255, 0.25);
             color: #ddd;
-            padding: 8px 12px;
-            border-radius: 14px;
-            font-size: 13px;
+            padding: 6px 2px;
+            border-radius: 10px;
+            font-size: 11px;
             font-weight: bold;
-            white-space: nowrap;
             display: flex;
             align-items: center;
-            gap: 6px;
+            justify-content: center;
+            gap: 2px;
             cursor: pointer;
-            transition: all 0.2s;
+            text-align: center;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
 
         .room-chip.active {
             background: #ff4757;
             border-color: #ff4757;
             color: #fff;
-            box-shadow: 0 3px 10px rgba(255, 71, 87, 0.4);
+            box-shadow: 0 2px 8px rgba(255, 71, 87, 0.4);
         }
 
         .delete-room {
-            font-size: 11px;
-            opacity: 0.6;
-            margin-left: 2px;
-        }
-
-        .delete-room:hover {
-            opacity: 1;
+            font-size: 10px;
             color: #ff6b6b;
+            margin-left: 2px;
         }
 
         /* Sezione Contatori */
         .stats-container {
             background: rgba(255, 255, 255, 0.08);
             border: 1px solid rgba(255, 255, 255, 0.15);
-            border-radius: 14px;
-            padding: 8px;
+            border-radius: 12px;
+            padding: 6px;
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: 4px;
         }
 
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             gap: 4px;
-            font-size: 12px;
+            font-size: 11px;
         }
 
         .stat-box {
@@ -153,24 +152,24 @@
 
         .stat-box strong {
             color: #fff;
-            font-size: 15px;
+            font-size: 14px;
         }
 
         .type-breakdown {
             display: flex;
             justify-content: space-around;
             border-top: 1px solid rgba(255, 255, 255, 0.1);
-            padding-top: 6px;
-            font-size: 13px;
+            padding-top: 4px;
+            font-size: 12px;
             font-weight: bold;
             color: #f1f2f6;
         }
 
-        /* Suoni e Controlli */
+        /* Controlli e Suoni */
         .controls-row {
             display: flex;
             justify-content: center;
-            gap: 6px;
+            gap: 5px;
             width: 100%;
         }
 
@@ -179,9 +178,9 @@
             background: rgba(255, 255, 255, 0.12);
             border: 1.5px solid rgba(255, 255, 255, 0.25);
             color: white;
-            padding: 9px 4px;
-            border-radius: 12px;
-            font-size: 13px;
+            padding: 8px 2px;
+            border-radius: 10px;
+            font-size: 12px;
             font-weight: bold;
             cursor: pointer;
         }
@@ -211,15 +210,15 @@
             justify-content: center;
             position: relative;
             width: 100%;
-            margin: 8px 0;
+            margin: 6px 0;
         }
 
         .sender-alert {
             position: absolute;
-            top: -10px;
+            top: -15px;
             background: #ff4757;
             color: white;
-            padding: 8px 18px;
+            padding: 10px 18px;
             border-radius: 18px;
             font-size: 15px;
             font-weight: bold;
@@ -230,6 +229,7 @@
             pointer-events: none;
             z-index: 10;
             text-align: center;
+            line-height: 1.3;
         }
 
         .sender-alert.show {
@@ -238,8 +238,8 @@
         }
 
         .tap-button {
-            width: 160px;
-            height: 160px;
+            width: 155px;
+            height: 155px;
             border-radius: 50%;
             background: linear-gradient(135deg, #ff4757, #ff6b81);
             border: none;
@@ -271,13 +271,13 @@
 
         .floating-emoji {
             position: absolute;
-            font-size: 30px;
+            font-size: 32px;
             animation: floatUp 2s ease-out forwards;
         }
 
         @keyframes floatUp {
             0% { transform: translateY(0) scale(0.5); opacity: 1; }
-            100% { transform: translateY(-160px) scale(1.4); opacity: 0; }
+            100% { transform: translateY(-170px) scale(1.4); opacity: 0; }
         }
 
         .footer {
@@ -285,16 +285,16 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
         }
 
         .whatsapp-btn {
             background: #25D366;
             color: white;
             border: none;
-            padding: 10px 20px;
-            border-radius: 20px;
-            font-size: 14px;
+            padding: 9px 18px;
+            border-radius: 18px;
+            font-size: 13px;
             font-weight: bold;
             cursor: pointer;
             text-decoration: none;
@@ -304,13 +304,13 @@
         .ad-banner {
             width: 100%;
             max-width: 320px;
-            height: 50px;
+            height: 45px;
             background: rgba(255, 255, 255, 0.05);
             border: 1px dashed rgba(255, 255, 255, 0.3);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: bold;
             color: #aaa;
             border-radius: 8px;
@@ -332,8 +332,8 @@
             <button class="add-btn" onclick="addNewRoom()">+</button>
         </div>
 
-        <!-- Lista Stanze Salvate -->
-        <div class="rooms-container" id="roomsList"></div>
+        <!-- Lista Stanze a Griglia (4 per Riga) -->
+        <div class="rooms-grid" id="roomsList"></div>
 
         <div class="stats-container">
             <div class="stats-grid">
@@ -386,7 +386,6 @@
         let soundEnabled = true;
         let currentRoomRef = null;
 
-        // Gestione Stanze Salvate nel Telefono
         let savedRooms = JSON.parse(localStorage.getItem('toctoc_rooms_list')) || ['generale', 'moglie', 'sorella', 'amico'];
         let activeRoom = localStorage.getItem('toctoc_room') || 'generale';
         let storedName = localStorage.getItem('toctoc_username') || '';
@@ -532,9 +531,12 @@
             playSound(currentSound);
             incrementStats(currentSound);
 
+            let countForType = (stats[currentSound] || 1);
+
             db.ref('rooms/' + activeRoom).set({
                 sound: currentSound,
                 sender: senderName,
+                count: countForType,
                 timestamp: Date.now()
             });
         }
@@ -574,17 +576,17 @@
 
         function spawnThemeEmojis(soundType) {
             const box = document.getElementById('emojiBox');
-            let emojis = ['🎉', '🌟', '🔥'];
+            let emojis = ['🎉', '🎊', '🌈', '🌟'];
             
             if (soundType === 'cuore') {
-                emojis = ['❤️', '💖', '💘', '💗', '💓', '🥰'];
+                emojis = ['❤️', '💖', '💗', '💓', '🎉', '🌈'];
             } else if (soundType === 'magia') {
-                emojis = ['✨', '🪄', '🌟', '💫', '⭐'];
+                emojis = ['✨', '🪄', '🌟', '💫', '🎉', '🌈'];
             } else if (soundType === 'porta') {
-                emojis = ['🚪', '🏡', '🔑', '🚪', '🔔'];
+                emojis = ['🚪', '🏡', '🔑', '🔔', '🎉', '🌈'];
             }
 
-            for (let i = 0; i < 20; i++) {
+            for (let i = 0; i < 25; i++) {
                 let span = document.createElement('span');
                 span.className = 'floating-emoji';
                 span.innerText = emojis[Math.floor(Math.random() * emojis.length)];
@@ -592,7 +594,7 @@
                 span.style.bottom = '20px';
                 span.style.animationDuration = (1.5 + Math.random()) + 's';
                 box.appendChild(span);
-                setTimeout(() => span.remove(), 2000);
+                setTimeout(() => span.remove(), 2200);
             }
         }
 
@@ -624,12 +626,15 @@
                     
                     let alertBox = document.getElementById('senderAlert');
                     let name = data.sender || 'Qualcuno';
-                    alertBox.innerText = `TOC-TOC da ${name}!\n(Stanza: ${activeRoom})`;
+                    let icon = data.sound === 'cuore' ? '💓' : (data.sound === 'magia' ? '✨' : '🚪');
+                    let countText = data.count ? `\n(${data.sound.toUpperCase()} #${data.count})` : '';
+
+                    alertBox.innerText = `TOC-TOC da ${name}! ${icon}${countText}`;
                     alertBox.classList.add('show');
                     
                     setTimeout(() => {
                         alertBox.classList.remove('show');
-                    }, 2500);
+                    }, 2800);
                 }
             });
         }
