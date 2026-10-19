@@ -44,23 +44,24 @@
         }
 
         .name-box {
-            margin: 8px 15px;
+            margin: 6px 15px;
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
+            flex-wrap: wrap;
         }
 
         .name-input {
             background: rgba(255, 255, 255, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.3);
             color: white;
-            padding: 6px 12px;
+            padding: 6px 10px;
             border-radius: 12px;
-            font-size: 13px;
+            font-size: 12px;
             text-align: center;
             outline: none;
-            width: 180px;
+            width: 140px;
         }
 
         .stats-grid {
@@ -120,15 +121,14 @@
             width: 100%;
         }
 
-        /* Banner Notifica Arrivo Toc-Toc */
         .sender-alert {
             position: absolute;
-            top: 20px;
+            top: 10px;
             background: rgba(255, 71, 87, 0.9);
             color: white;
             padding: 10px 20px;
             border-radius: 20px;
-            font-size: 16px;
+            font-size: 15px;
             font-weight: bold;
             box-shadow: 0 4px 15px rgba(0,0,0,0.5);
             opacity: 0;
@@ -136,6 +136,7 @@
             transition: all 0.3s ease;
             pointer-events: none;
             z-index: 10;
+            text-align: center;
         }
 
         .sender-alert.show {
@@ -231,7 +232,8 @@
         <h1>TOC-TOC 💗</h1>
         
         <div class="name-box">
-            <input type="text" id="usernameInput" class="name-input" placeholder="Il tuo Nome / Soprannome" onchange="saveUsername()">
+            <input type="text" id="usernameInput" class="name-input" placeholder="Il tuo Nome" onchange="saveConfig()">
+            <input type="text" id="roomInput" class="name-input" placeholder="Stanza (es: generale)" onchange="updateRoomListener()">
         </div>
 
         <div class="stats-grid">
@@ -255,7 +257,7 @@
     </header>
 
     <div class="tap-container">
-        <div id="senderAlert" class="sender-alert">TOC-TOC da qualcuno!</div>
+        <div id="senderAlert" class="sender-alert">TOC-TOC!</div>
         <div class="emoji-container" id="emojiBox"></div>
         <button class="tap-button" onclick="sendTap()">
             <span>TOC-TOC</span>
@@ -277,14 +279,21 @@
         let currentSound = 'porta';
         let soundEnabled = true;
         let vibeEnabled = true;
+        let currentRoomRef = null;
 
-        // Gestione Nome Utente
+        // Gestione Dati Salvati
         let storedName = localStorage.getItem('toctoc_username') || '';
-        document.getElementById('usernameInput').value = storedName;
+        let storedRoom = localStorage.getItem('toctoc_room') || 'generale';
 
-        function saveUsername() {
-            let val = document.getElementById('usernameInput').value.trim();
-            localStorage.setItem('toctoc_username', val);
+        document.getElementById('usernameInput').value = storedName;
+        document.getElementById('roomInput').value = storedRoom;
+
+        function saveConfig() {
+            let nameVal = document.getElementById('usernameInput').value.trim();
+            let roomVal = document.getElementById('roomInput').value.trim().toLowerCase() || 'generale';
+            localStorage.setItem('toctoc_username', nameVal);
+            localStorage.setItem('toctoc_room', roomVal);
+            updateWhatsappLink();
         }
 
         // Gestione Statistiche
@@ -373,10 +382,12 @@
 
         function sendTap() {
             let senderName = document.getElementById('usernameInput').value.trim() || 'Qualcuno';
+            let roomName = document.getElementById('roomInput').value.trim().toLowerCase() || 'generale';
+
             playSound(currentSound);
             incrementStats();
 
-            db.ref('signal').set({
+            db.ref('rooms/' + roomName).set({
                 sound: currentSound,
                 sender: senderName,
                 timestamp: Date.now()
@@ -433,26 +444,41 @@
             document.getElementById('statYear').innerText = stats.year;
         }
 
-        // Ascolto segnali in tempo reale
-        db.ref('signal').on('value', (snapshot) => {
-            const data = snapshot.val();
-            if (data && data.timestamp > Date.now() - 3000) {
-                playSound(data.sound || 'porta');
-                
-                // Mostra il nome di chi ha bussato
-                let alertBox = document.getElementById('senderAlert');
-                let name = data.sender || 'Qualcuno';
-                alertBox.innerText = `TOC-TOC da ${name}! 🚪`;
-                alertBox.classList.add('show');
-                
-                setTimeout(() => {
-                    alertBox.classList.remove('show');
-                }, 2500);
-            }
-        });
+        // Ascolto in tempo reale della Stanza Selezionata
+        function updateRoomListener() {
+            saveConfig();
+            let roomName = document.getElementById('roomInput').value.trim().toLowerCase() || 'generale';
 
-        const shareText = encodeURIComponent("Scarica Toc-Toc e mandami un segnale in tempo reale! Ecco il link: " + window.location.href);
-        document.getElementById('whatsappShare').href = `https://api.whatsapp.com/send?text=${shareText}`;
+            if (currentRoomRef) {
+                currentRoomRef.off(); // Stacca l'ascolto della stanza precedente
+            }
+
+            currentRoomRef = db.ref('rooms/' + roomName);
+            currentRoomRef.on('value', (snapshot) => {
+                const data = snapshot.val();
+                if (data && data.timestamp > Date.now() - 3000) {
+                    playSound(data.sound || 'porta');
+                    
+                    let alertBox = document.getElementById('senderAlert');
+                    let name = data.sender || 'Qualcuno';
+                    alertBox.innerText = `TOC-TOC da ${name}!\n(Stanza: ${roomName})`;
+                    alertBox.classList.add('show');
+                    
+                    setTimeout(() => {
+                        alertBox.classList.remove('show');
+                    }, 2500);
+                }
+            });
+        }
+
+        function updateWhatsappLink() {
+            let roomName = document.getElementById('roomInput').value.trim().toLowerCase() || 'generale';
+            const shareText = encodeURIComponent(`Unisciti alla mia stanza "${roomName}" su Toc-Toc per scambiarci i segnali! Entra qui: https://lucaandrea18.github.io/toctoc/`);
+            document.getElementById('whatsappShare').href = `https://api.whatsapp.com/send?text=${shareText}`;
+        }
+
+        // Inizializza l'ascolto
+        updateRoomListener();
     </script>
 </body>
 </html>
