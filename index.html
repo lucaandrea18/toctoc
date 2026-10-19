@@ -4,10 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Toc-Toc</title>
-    <!-- Collegamento al Manifest per PWABuilder e Android -->
     <link rel="manifest" href="./manifest.json">
     
-    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
     
@@ -35,41 +33,60 @@
 
         header {
             text-align: center;
-            margin-top: 15px;
+            margin-top: 10px;
+            width: 100%;
         }
 
         h1 {
-            font-size: 22px;
+            font-size: 20px;
             margin: 0;
             letter-spacing: 1px;
         }
 
-        .stats {
-            font-size: 13px;
-            opacity: 0.8;
-            margin-top: 5px;
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 4px;
+            font-size: 11px;
+            opacity: 0.9;
+            margin: 6px 10px;
+            background: rgba(255, 255, 255, 0.08);
+            padding: 6px;
+            border-radius: 10px;
         }
 
-        .sound-selector {
+        .stat-box {
+            text-align: center;
+        }
+
+        .controls-row {
             display: flex;
-            gap: 8px;
-            margin: 10px 0;
+            justify-content: center;
+            gap: 6px;
+            margin: 5px 0;
+            flex-wrap: wrap;
         }
 
-        .sound-btn {
+        .sound-btn, .toggle-btn, .premium-btn {
             background: rgba(255, 255, 255, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.2);
             color: white;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 13px;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 11px;
             cursor: pointer;
             transition: all 0.2s;
         }
 
-        .sound-btn.active {
+        .sound-btn.active, .toggle-btn.active {
             background: #ff4757;
             border-color: #ff4757;
+            font-weight: bold;
+        }
+
+        .premium-btn {
+            background: linear-gradient(135deg, #f1c40f, #e67e22);
+            border: none;
             font-weight: bold;
         }
 
@@ -79,17 +96,18 @@
             align-items: center;
             justify-content: center;
             flex: 1;
+            position: relative;
         }
 
         .tap-button {
-            width: 180px;
-            height: 180px;
+            width: 160px;
+            height: 160px;
             border-radius: 50%;
             background: linear-gradient(135deg, #ff4757, #ff6b81);
             border: none;
             box-shadow: 0 10px 30px rgba(255, 71, 87, 0.4);
             color: white;
-            font-size: 20px;
+            font-size: 18px;
             font-weight: bold;
             cursor: pointer;
             display: flex;
@@ -98,42 +116,70 @@
             justify-content: center;
             transition: transform 0.1s, box-shadow 0.1s;
             outline: none;
+            z-index: 2;
         }
 
         .tap-button:active {
             transform: scale(0.92);
-            box-shadow: 0 5px 15px rgba(255, 71, 87, 0.3);
+        }
+
+        /* Contenitore faccine festose */
+        .emoji-container {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .floating-emoji {
+            position: absolute;
+            font-size: 24px;
+            animation: floatUp 2s ease-out forwards;
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(0) scale(0.5); opacity: 1; }
+            100% { transform: translateY(-150px) scale(1.4); opacity: 0; }
         }
 
         .footer {
-            margin-bottom: 20px;
+            margin-bottom: 10px;
             text-align: center;
             width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
         }
 
         .whatsapp-btn {
             background: #25D366;
             color: white;
             border: none;
-            padding: 10px 20px;
-            border-radius: 25px;
-            font-size: 14px;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
             font-weight: bold;
             cursor: pointer;
             text-decoration: none;
-            display: inline-block;
             box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
         }
 
-        /* Effetto lampeggiante alla ricezione del segnale */
-        @keyframes flash {
-            0% { background-color: var(--bg-color); }
-            50% { background-color: #ff4757; }
-            100% { background-color: var(--bg-color); }
-        }
-
-        .alert-flash {
-            animation: flash 0.5s ease 2;
+        /* Banner Pubblicitario Placeholder */
+        .ad-banner {
+            width: 100%;
+            max-width: 320px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px dashed rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            opacity: 0.6;
+            border-radius: 6px;
         }
     </style>
 </head>
@@ -141,16 +187,29 @@
 
     <header>
         <h1>TOC-TOC 💗</h1>
-        <div class="stats" id="statsText">Totali: 0 | Oggi: 0 | Settimana: 0</div>
         
-        <div class="sound-selector">
+        <div class="stats-grid">
+            <div class="stat-box">Oggi<br><strong id="statDay">0</strong></div>
+            <div class="stat-box">Sett.<br><strong id="statWeek">0</strong></div>
+            <div class="stat-box">Mese<br><strong id="statMonth">0</strong></div>
+            <div class="stat-box">Anno<br><strong id="statYear">0</strong></div>
+        </div>
+
+        <div class="controls-row">
             <button class="sound-btn active" onclick="setSound('porta')">🚪 Porta</button>
             <button class="sound-btn" onclick="setSound('cuore')">💓 Cuore</button>
             <button class="sound-btn" onclick="setSound('magia')">✨ Magia</button>
         </div>
+
+        <div class="controls-row">
+            <button id="soundToggle" class="toggle-btn active" onclick="toggleSoundState()">🔊 Audio: ON</button>
+            <button id="vibeToggle" class="toggle-btn active" onclick="toggleVibeState()">📳 Vibrazione: ON</button>
+            <button class="premium-btn" onclick="openPremium()">⭐ Premium</button>
+        </div>
     </header>
 
     <div class="tap-container">
+        <div class="emoji-container" id="emojiBox"></div>
         <button class="tap-button" onclick="sendTap()">
             <span>TOC-TOC</span>
         </button>
@@ -158,10 +217,10 @@
 
     <div class="footer">
         <a id="whatsappShare" class="whatsapp-btn" href="#" target="_blank">Invita su WhatsApp</a>
+        <div class="ad-banner">Spazio Banner Pubblicitario</div>
     </div>
 
     <script>
-        // Configurazione Firebase
         const firebaseConfig = {
             databaseURL: "https://toctoc-302c3-default-rtdb.europe-west1.firebasedatabase.app/"
         };
@@ -169,43 +228,74 @@
         const db = firebase.database();
 
         let currentSound = 'porta';
-        let totalTaps = parseInt(localStorage.getItem('toctoc_total')) || 0;
-        let todayTaps = parseInt(localStorage.getItem('toctoc_today')) || 0;
-        let weekTaps = parseInt(localStorage.getItem('toctoc_week')) || 0;
+        let soundEnabled = true;
+        let vibeEnabled = true;
 
+        // Gestione Statistiche Temporali
+        let stats = JSON.parse(localStorage.getItem('toctoc_stats')) || {
+            day: 0, week: 0, month: 0, year: 0, total: 0,
+            lastDay: new Date().getDate()
+        };
+
+        checkDateReset();
         updateStatsDisplay();
 
-        function setSound(soundType) {
-            currentSound = soundType;
-            document.querySelectorAll('.sound-btn').forEach(btn => btn.classList.remove('active'));
+        function checkDateReset() {
+            let today = new Date().getDate();
+            if (stats.lastDay !== today) {
+                stats.day = 0;
+                stats.lastDay = today;
+                saveStats();
+            }
+        }
+
+        function saveStats() {
+            localStorage.setItem('toctoc_stats', JSON.stringify(stats));
+        }
+
+        function setSound(type) {
+            currentSound = type;
+            document.querySelectorAll('.sound-btn').forEach(b => b.classList.remove('active'));
             event.target.classList.add('active');
         }
 
-        // Generatore Audio Web Audio API nativo
+        function toggleSoundState() {
+            soundEnabled = !soundEnabled;
+            let btn = document.getElementById('soundToggle');
+            btn.innerText = soundEnabled ? "🔊 Audio: ON" : "🔇 Audio: OFF";
+            btn.classList.toggle('active', soundEnabled);
+        }
+
+        function toggleVibeState() {
+            vibeEnabled = !vibeEnabled;
+            let btn = document.getElementById('vibeToggle');
+            btn.innerText = vibeEnabled ? "📳 Vibrazione: ON" : "📴 Vibrazione: OFF";
+            btn.classList.toggle('active', vibeEnabled);
+        }
+
+        function openPremium() {
+            alert("Versione Premium Toc-Toc: Funzioni sbloccate e nessuna pubblicità!");
+        }
+
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
         function playSound(type) {
-            if (audioCtx.state === 'suspended') {
-                audioCtx.resume();
-            }
+            if (!soundEnabled) return;
+            if (audioCtx.state === 'suspended') { audioCtx.resume(); }
 
             if (type === 'porta') {
-                // Doppio colpo di porta raffinato
                 playTone(220, 0.08, 'triangle');
                 setTimeout(() => playTone(260, 0.12, 'triangle'), 120);
             } else if (type === 'cuore') {
-                // Battito cardiaco tonfo-tonfo
                 playTone(120, 0.1, 'sine');
                 setTimeout(() => playTone(100, 0.15, 'sine'), 180);
             } else if (type === 'magia') {
-                // Effetto magico ascendente
                 playTone(400, 0.08, 'sine');
                 setTimeout(() => playTone(600, 0.08, 'sine'), 80);
                 setTimeout(() => playTone(880, 0.15, 'sine'), 160);
             }
 
-            // Vibrazione aptica se supportata
-            if (navigator.vibrate) {
+            if (vibeEnabled && navigator.vibrate) {
                 navigator.vibrate(70);
             }
         }
@@ -222,16 +312,13 @@
                 gain.connect(audioCtx.destination);
                 osc.start();
                 osc.stop(audioCtx.currentTime + duration);
-            } catch (e) {
-                console.log("Audio non avviato interattivamente");
-            }
+            } catch (e) {}
         }
 
         function sendTap() {
             playSound(currentSound);
             incrementStats();
 
-            // Invia il segnale al database Firebase
             db.ref('signal').set({
                 sound: currentSound,
                 timestamp: Date.now()
@@ -239,43 +326,63 @@
         }
 
         function incrementStats() {
-            totalTaps++;
-            todayTaps++;
-            weekTaps++;
-
-            localStorage.setItem('toctoc_total', totalTaps);
-            localStorage.setItem('toctoc_today', todayTaps);
-            localStorage.setItem('toctoc_week', weekTaps);
-
+            stats.day++;
+            stats.week++;
+            stats.month++;
+            stats.year++;
+            stats.total++;
+            saveStats();
             updateStatsDisplay();
 
-            // Tema colore dinamico ogni 100 tap
-            if (totalTaps % 100 === 0) {
-                document.body.style.backgroundColor = '#' + Math.floor(Math.random()*16777215).toString(16);
+            // Ogni 100 tocchi: arcobaleno e pioggia di faccine
+            if (stats.total % 100 === 0) {
+                triggerRainbowEffect();
+                spawnEmojis();
+            }
+        }
+
+        function triggerRainbowEffect() {
+            const colors = ['#ff4757', '#2ed573', '#1e90ff', '#ffa502', '#9b59b6', '#ff6b81'];
+            let i = 0;
+            let interval = setInterval(() => {
+                document.body.style.backgroundColor = colors[i % colors.length];
+                i++;
+                if (i > 10) {
+                    clearInterval(interval);
+                    document.body.style.backgroundColor = '#050505';
+                }
+            }, 300);
+        }
+
+        function spawnEmojis() {
+            const box = document.getElementById('emojiBox');
+            const emojis = ['😂', '❤️', '🔥', '🌟', '🎉', '🥰', '🚀', '😍'];
+            for (let i = 0; i < 15; i++) {
+                let span = document.createElement('span');
+                span.className = 'floating-emoji';
+                span.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+                span.style.left = Math.random() * 80 + 10 + '%';
+                span.style.bottom = '20px';
+                span.style.animationDuration = (1.5 + Math.random()) + 's';
+                box.appendChild(span);
+                setTimeout(() => span.remove(), 2000);
             }
         }
 
         function updateStatsDisplay() {
-            document.getElementById('statsText').innerText = `Totali: ${totalTaps} | Oggi: ${todayTaps} | Settimana: ${weekTaps}`;
+            document.getElementById('statDay').innerText = stats.day;
+            document.getElementById('statWeek').innerText = stats.week;
+            document.getElementById('statMonth').innerText = stats.month;
+            document.getElementById('statYear').innerText = stats.year;
         }
 
-        // Ascolta i tap in tempo reale dagli altri dispositivi
         db.ref('signal').on('value', (snapshot) => {
             const data = snapshot.val();
-            if (data && data.timestamp > Date.now() - 3000) { // Esegue solo se ricevuto negli ultimi 3 secondi
+            if (data && data.timestamp > Date.now() - 3000) {
                 playSound(data.sound || 'porta');
-                triggerAlert();
             }
         });
 
-        function triggerAlert() {
-            document.body.classList.add('alert-flash');
-            setTimeout(() => {
-                document.body.classList.remove('alert-flash');
-            }, 1000);
-        }
-
-        // Configura il link di condivisione WhatsApp
         const shareText = encodeURIComponent("Scarica Toc-Toc e mandami un segnale in tempo reale! Ecco il link: " + window.location.href);
         document.getElementById('whatsappShare').href = `https://api.whatsapp.com/send?text=${shareText}`;
     </script>
