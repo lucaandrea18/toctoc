@@ -43,6 +43,26 @@
             letter-spacing: 1px;
         }
 
+        .name-box {
+            margin: 8px 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .name-input {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 12px;
+            font-size: 13px;
+            text-align: center;
+            outline: none;
+            width: 180px;
+        }
+
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -97,6 +117,30 @@
             justify-content: center;
             flex: 1;
             position: relative;
+            width: 100%;
+        }
+
+        /* Banner Notifica Arrivo Toc-Toc */
+        .sender-alert {
+            position: absolute;
+            top: 20px;
+            background: rgba(255, 71, 87, 0.9);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 16px;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .sender-alert.show {
+            opacity: 1;
+            transform: translateY(0);
         }
 
         .tap-button {
@@ -123,7 +167,6 @@
             transform: scale(0.92);
         }
 
-        /* Contenitore faccine festose */
         .emoji-container {
             position: absolute;
             width: 100%;
@@ -167,7 +210,6 @@
             box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
         }
 
-        /* Banner Pubblicitario Placeholder */
         .ad-banner {
             width: 100%;
             max-width: 320px;
@@ -188,6 +230,10 @@
     <header>
         <h1>TOC-TOC 💗</h1>
         
+        <div class="name-box">
+            <input type="text" id="usernameInput" class="name-input" placeholder="Il tuo Nome / Soprannome" onchange="saveUsername()">
+        </div>
+
         <div class="stats-grid">
             <div class="stat-box">Oggi<br><strong id="statDay">0</strong></div>
             <div class="stat-box">Sett.<br><strong id="statWeek">0</strong></div>
@@ -209,6 +255,7 @@
     </header>
 
     <div class="tap-container">
+        <div id="senderAlert" class="sender-alert">TOC-TOC da qualcuno!</div>
         <div class="emoji-container" id="emojiBox"></div>
         <button class="tap-button" onclick="sendTap()">
             <span>TOC-TOC</span>
@@ -231,7 +278,16 @@
         let soundEnabled = true;
         let vibeEnabled = true;
 
-        // Gestione Statistiche Temporali
+        // Gestione Nome Utente
+        let storedName = localStorage.getItem('toctoc_username') || '';
+        document.getElementById('usernameInput').value = storedName;
+
+        function saveUsername() {
+            let val = document.getElementById('usernameInput').value.trim();
+            localStorage.setItem('toctoc_username', val);
+        }
+
+        // Gestione Statistiche
         let stats = JSON.parse(localStorage.getItem('toctoc_stats')) || {
             day: 0, week: 0, month: 0, year: 0, total: 0,
             lastDay: new Date().getDate()
@@ -316,11 +372,13 @@
         }
 
         function sendTap() {
+            let senderName = document.getElementById('usernameInput').value.trim() || 'Qualcuno';
             playSound(currentSound);
             incrementStats();
 
             db.ref('signal').set({
                 sound: currentSound,
+                sender: senderName,
                 timestamp: Date.now()
             });
         }
@@ -334,7 +392,6 @@
             saveStats();
             updateStatsDisplay();
 
-            // Ogni 100 tocchi: arcobaleno e pioggia di faccine
             if (stats.total % 100 === 0) {
                 triggerRainbowEffect();
                 spawnEmojis();
@@ -376,10 +433,21 @@
             document.getElementById('statYear').innerText = stats.year;
         }
 
+        // Ascolto segnali in tempo reale
         db.ref('signal').on('value', (snapshot) => {
             const data = snapshot.val();
             if (data && data.timestamp > Date.now() - 3000) {
                 playSound(data.sound || 'porta');
+                
+                // Mostra il nome di chi ha bussato
+                let alertBox = document.getElementById('senderAlert');
+                let name = data.sender || 'Qualcuno';
+                alertBox.innerText = `TOC-TOC da ${name}! 🚪`;
+                alertBox.classList.add('show');
+                
+                setTimeout(() => {
+                    alertBox.classList.remove('show');
+                }, 2500);
             }
         });
 
