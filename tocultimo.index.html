@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Toc-Toc</title>
+    <!-- Manifest integrato direttamente -->
+    <link rel="manifest" href="data:application/manifest+json;base64,ewogICJuYW1lIjogIlRvYy1Ub2MiLAogICJzaG9ydF9uYW1lIjogIlRvYy1Ub2MiLAogICJzdGFydF91cmwiOiAiLi8iLAogICJkaXNwbGF5IjogInN0YW5kYWxvbmUiLAogICJiYWNrZ3JvdW5kX2NvbG9yIjogIiMxYTFhMmUiLAogICJ0aGVtZV9jb2xvciIjogIiMxYTFhMmUiLAogICJpZCI6ICJ0b2N0b2MuYXBwIgp9">
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <style>
+        :root {
+            --bg-color: #1a1a2e;
+            --text-color: #ffffff;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            height: 100vh;
+            overflow: hidden;
+            transition: background-color 0.4s ease;
+        }
+
+        header {
+            padding: 15px;
+            text-align: center;
+            width: 100%;
+        }
+
+        h1 { margin: 0; font-size: 24px; letter-spacing: 2px; }
+        
+        .stats-box {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            font-size: 13px;
+            opacity: 0.85;
+            margin-top: 5px;
+        }
+
+        .selector-panel {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            margin-bottom: 5px;
+        }
+
+        .option-pill {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid transparent;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .option-pill.active {
+            border-color: #ffffff;
+            background: rgba(255, 255, 255, 0.25);
+            font-weight: bold;
+        }
+
+        .main-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex-grow: 1;
+            position: relative;
+        }
+
+        #incomingAlert {
+            position: absolute;
+            top: -25px;
+            background: #ff4b2b;
+            color: white;
+            padding: 8px 18px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(255,75,43,0.5);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .circle-btn {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ff758c, #ff4b2b);
+            border: none;
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: transform 0.1s ease, filter 0.2s;
+            outline: none;
+        }
+
+        .circle-btn:active { transform: scale(0.93); }
+        .circle-icon { font-size: 42px; }
+
+        .footer-panel {
+            width: 100%;
+            padding: 15px 15px 25px 15px;
+            background: rgba(0, 0, 0, 0.4);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            border-top-left-radius: 25px;
+            border-top-right-radius: 25px;
+        }
+
+        .action-btn {
+            background: #25d366;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 30px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 90%;
+            max-width: 350px;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        .ad-banner {
+            width: 100%;
+            max-width: 320px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px dashed rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            opacity: 0.6;
+            border-radius: 8px;
+        }
+
+        .pulse-anim { animation: pulseEffect 0.4s ease; }
+        @keyframes pulseEffect {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); filter: brightness(1.3); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes flashAnim {
+            0% { background-color: #1a1a2e; }
+            50% { background-color: #ff4b2b; }
+            100% { background-color: #1a1a2e; }
+        }
+        .flash-mode {
+            animation: flashAnim 0.6s ease 2;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>🚪 TOC-TOC 💓</h1>
+        <div class="stats-box">
+            <span>Totali: <b id="counter">0</b></span>
+            <span>Oggi: <b id="dailyCounter">0</b></span>
+            <span>Settimana: <b id="weeklyCounter">0</b></span>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <div id="incomingAlert">💌 Toc ricevuto!</div>
+
+        <div class="selector-panel">
+            <button class="option-pill active" id="pill-porta" onclick="setTocType('porta', '🚪', 'Porta')">🚪 Porta</button>
+            <button class="option-pill" id="pill-cuore" onclick="setTocType('cuore', '💓', 'Cuore')">💓 Cuore</button>
+            <button class="option-pill" id="pill-magia" onclick="setTocType('magia', '✨', 'Magia')">✨ Magia</button>
+        </div>
+
+        <button class="circle-btn" id="circleBtn" onclick="sendToc()">
+            <span class="circle-icon" id="circleIcon">🚪</span>
+            <span id="circleText">TOC-TOC</span>
+        </button>
+    </div>
+
+    <div class="footer-panel">
+        <div class="ad-banner">Spazio Banner Pubblicitario (AdMob)</div>
+        <button class="action-btn" onclick="shareViaWhatsApp()">📲 Invia invito WhatsApp</button>
+    </div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyBphcwIvfZffW7bXbXTDPw96F6ocE9I6E",
+            authDomain: "toctoc-302c3.firebaseapp.com",
+            databaseURL: "https://toctoc-302c3-default-rtdb.firebaseio.com",
+            projectId: "toctoc-302c3",
+            storageBucket: "toctoc-302c3.appspot.com",
+            messagingSenderId: "222885530410",
+            appId: "1:222885530410:web:643df43b6d7c63111cac53"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        const urlParams = new URLSearchParams(window.location.search);
+        let roomId = urlParams.get('room');
+        if (!roomId) {
+            roomId = 'room_' + Math.random().toString(36).substring(2, 9);
+            const newUrl = window.location.origin + window.location.pathname + '?room=' + roomId;
+            window.history.replaceState({}, '', newUrl);
+        }
+
+        let currentType = 'porta';
+        let totalCount = parseInt(localStorage.getItem('toctoc_total') || '0');
+        let dailyCount = parseInt(localStorage.getItem('toctoc_daily') || '0');
+        let weeklyCount = parseInt(localStorage.getItem('toctoc_weekly') || '0');
+
+        document.getElementById('counter').innerText = totalCount;
+        document.getElementById('dailyCounter').innerText = dailyCount;
+        document.getElementById('weeklyCounter').innerText = weeklyCount;
+
+        const roomRef = db.ref('rooms/' + roomId);
+        const loadTime = Date.now();
+
+        roomRef.on('child_added', (snapshot) => {
+            const data = snapshot.val();
+            if (data && data.timestamp > loadTime) {
+                triggerIncomingVisualAlert(data.type);
+                playTocEffect(data.type, false);
+            }
+        });
+
+        function triggerIncomingVisualAlert(type) {
+            const alertBox = document.getElementById('incomingAlert');
+            alertBox.innerText = `💌 Ti è arrivato un Toc (${type.toUpperCase()})!`;
+            alertBox.style.opacity = '1';
+            
+            document.body.classList.add('flash-mode');
+            setTimeout(() => {
+                alertBox.style.opacity = '0';
+                document.body.classList.remove('flash-mode');
+            }, 1500);
+        }
+
+        function playSound(type) {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const now = ctx.currentTime;
+
+                if (type === 'porta') {
+                    playKnock(ctx, now);
+                    setTimeout(() => playKnock(ctx, ctx.currentTime + 0.12), 120);
+                } else if (type === 'cuore') {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.connect(gain); gain.connect(ctx.destination);
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(100, now);
+                    osc.frequency.exponentialRampToValueAtTime(40, now + 0.25);
+                    gain.gain.setValueAtTime(1, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
+                    osc.start(now); osc.stop(now + 0.25);
+                } else if (type === 'magia') {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.connect(gain); gain.connect(ctx.destination);
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(600, now);
+                    osc.frequency.exponentialRampToValueAtTime(1200, now + 0.35);
+                    gain.gain.setValueAtTime(0.6, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.35);
+                    osc.start(now); osc.stop(now + 0.35);
+                }
+            } catch (e) { console.log(e); }
+        }
+
+        function playKnock(ctx, time) {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain); gain.connect(ctx.destination);
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(220, time);
+            osc.frequency.exponentialRampToValueAtTime(80, time + 0.08);
+            gain.gain.setValueAtTime(0.9, time);
+            gain.gain.exponentialRampToValueAtTime(0.01, time + 0.08);
+            osc.start(time); osc.stop(time + 0.08);
+        }
+
+        function setTocType(type, icon, text) {
+            currentType = type;
+            document.getElementById('circleIcon').innerText = icon;
+            document.getElementById('circleText').innerText = text.toUpperCase();
+            document.querySelectorAll('.option-pill').forEach(p => p.classList.remove('active'));
+            document.getElementById('pill-' + type).classList.add('active');
+        }
+
+        function sendToc() {
+            roomRef.push({
+                type: currentType,
+                timestamp: firebase.database.ServerValue.TIMESTAMP
+            });
+            playTocEffect(currentType, true);
+        }
+
+        function playTocEffect(type, isSender) {
+            playSound(type);
+
+            if (navigator.vibrate) {
+                if (type === 'porta') navigator.vibrate([120, 60, 120]);
+                else if (type === 'cuore') navigator.vibrate([200, 100, 200]);
+                else if (type === 'magia') navigator.vibrate([50, 50, 50, 50, 150]);
+            }
+
+            const btn = document.getElementById('circleBtn');
+            btn.classList.add('pulse-anim');
+            setTimeout(() => btn.classList.remove('pulse-anim'), 400);
+
+            totalCount++;
+            dailyCount++;
+            weeklyCount++;
+
+            localStorage.setItem('toctoc_total', totalCount);
+            localStorage.setItem('toctoc_daily', dailyCount);
+            localStorage.setItem('toctoc_weekly', weeklyCount);
+
+            document.getElementById('counter').innerText = totalCount;
+            document.getElementById('dailyCounter').innerText = dailyCount;
+            document.getElementById('weeklyCounter').innerText = weeklyCount;
+        }
+
+        function shareViaWhatsApp() {
+            const currentUrl = window.location.href;
+            const message = encodeURIComponent("Ehi! Connettiti con me su Toc-Toc per scambiarci i tocchi in tempo reale da qui: " + currentUrl);
+            window.open("https://api.whatsapp.com/send?text=" + message, "_blank");
+        }
+    </script>
+</body>
+</html>
