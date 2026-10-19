@@ -15,6 +15,21 @@
             --text-color: #ffffff;
         }
 
+        /* Impedisce la selezione del testo in tutta l'app */
+        * {
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        input {
+            -webkit-user-select: auto;
+            user-select: auto;
+        }
+
         body {
             margin: 0;
             padding: 10px 12px;
@@ -248,6 +263,7 @@
             transition: transform 0.1s;
             outline: none;
             z-index: 2;
+            touch-action: manipulation;
         }
 
         .tap-button:active {
@@ -280,7 +296,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.85);
+            background: rgba(0, 0, 0, 0.88);
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -296,15 +312,15 @@
             pointer-events: auto;
         }
 
-        .mj-silhouette {
+        .special-icon-anim {
             font-size: 110px;
-            animation: moonwalkBounce 1s infinite alternate ease-in-out;
-            filter: drop-shadow(0 0 20px #ff4757);
+            animation: bounceAnim 1s infinite alternate ease-in-out;
+            filter: drop-shadow(0 0 20px #2ed573);
         }
 
-        @keyframes moonwalkBounce {
-            0% { transform: translateX(-30px) scale(1); }
-            100% { transform: translateX(30px) scale(1.1); }
+        @keyframes bounceAnim {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.2); }
         }
 
         .special-text {
@@ -400,14 +416,14 @@
     <div class="tap-container">
         <div id="senderAlert" class="sender-alert">TOC-TOC!</div>
         <div class="emoji-container" id="emojiBox"></div>
-        <button class="tap-button" onclick="sendTap()">
+        <button class="tap-button" id="mainTapBtn" onclick="sendTap()" oncontextmenu="return false;">
             <span>TOC-TOC</span>
         </button>
     </div>
 
     <div id="specialOverlay" class="special-overlay">
-        <div id="specialIcon" class="mj-silhouette">🕺</div>
-        <div id="specialMessage" class="special-text">TRAGUARDO 200 TOCCHI!</div>
+        <div id="specialIcon" class="special-icon-anim">🆗</div>
+        <div id="specialMessage" class="special-text">TRAGUARDO RAGGIUNTO!</div>
     </div>
 
     <div class="footer">
@@ -431,6 +447,17 @@
         let storedName = localStorage.getItem('toctoc_username') || '';
 
         document.getElementById('usernameInput').value = storedName;
+
+        // Richiesta permessi notifiche a schermo chiuso
+        if ("Notification" in window && Notification.permission !== "granted") {
+            Notification.requestPermission();
+        }
+
+        function requestNotificationPermission() {
+            if ("Notification" in window && Notification.permission === "default") {
+                Notification.requestPermission();
+            }
+        }
 
         function saveConfig() {
             let nameVal = document.getElementById('usernameInput').value.trim();
@@ -566,6 +593,26 @@
             } catch (e) {}
         }
 
+        /* Effetto Applausi + OK per 100, 300, 500... */
+        function playApplaudShow(count) {
+            if (!soundEnabled) return;
+            if (audioCtx.state === 'suspended') { audioCtx.resume(); }
+
+            showSpecialOverlay('🆗👏', `GRANDE TRAGUARDO!\n${count} TOCCHI!`);
+
+            // Suono vittoria/applauso
+            const notes = [261.63, 329.63, 392.00, 523.25, 659.25, 783.99];
+            notes.forEach((freq, idx) => {
+                setTimeout(() => {
+                    playTone(freq, 0.2, 'triangle');
+                }, idx * 120);
+            });
+
+            setTimeout(() => {
+                hideSpecialOverlay();
+            }, 4500);
+        }
+
         function playMichaelJacksonShow() {
             if (!soundEnabled) return;
             if (audioCtx.state === 'suspended') { audioCtx.resume(); }
@@ -644,6 +691,7 @@
         }
 
         function sendTap() {
+            requestNotificationPermission();
             let senderName = document.getElementById('usernameInput').value.trim() || 'Qualcuno';
 
             playSound(currentSound);
@@ -677,6 +725,7 @@
                 triggerRainbowEffect();
                 spawnThemeEmojis(soundType);
 
+                // Se è 200, 400, 600... scattano le animazioni speciali di persona
                 if (stats.total % 200 === 0) {
                     if (activeRoom === 'andrea' || activeRoom === 'figlio') {
                         playMichaelJacksonShow();
@@ -684,7 +733,12 @@
                         playWifeThanksShow();
                     } else if (activeRoom === 'sorella') {
                         playKPopShow();
+                    } else {
+                        playApplaudShow(stats.total);
                     }
+                } else {
+                    // Se è 100, 300, 500, 700... scattano OK e Applausi
+                    playApplaudShow(stats.total);
                 }
             }
         }
@@ -704,14 +758,14 @@
 
         function spawnThemeEmojis(soundType) {
             const box = document.getElementById('emojiBox');
-            let emojis = ['🎉', '🎊', '🌈', '🌟', '🎵', '🕺'];
+            let emojis = ['🎉', '🎊', '🌈', '🌟', '🎵', '🕺', '👏', '🆗'];
             
             if (soundType === 'cuore') {
-                emojis = ['❤️', '💖', '💗', '💓', '🎉', '🌈'];
+                emojis = ['❤️', '💖', '💗', '💓', '🎉', '🌈', '👏'];
             } else if (soundType === 'magia') {
-                emojis = ['✨', '🪄', '🌟', '💫', '🎉', '🌈'];
+                emojis = ['✨', '🪄', '🌟', '💫', '🎉', '🌈', '👏'];
             } else if (soundType === 'porta') {
-                emojis = ['🚪', '🏡', '🔑', '🔔', '🎉', '🌈'];
+                emojis = ['🚪', '🏡', '🔑', '🔔', '🎉', '🌈', '👏'];
             }
 
             for (let i = 0; i < 25; i++) {
@@ -737,6 +791,18 @@
             document.getElementById('countMagia').innerText = stats.magia || 0;
         }
 
+        function sendSystemNotification(title, body) {
+            if ("Notification" in window && Notification.permission === "granted") {
+                try {
+                    new Notification(title, {
+                        body: body,
+                        icon: './icon-192.png',
+                        vibrate: [200, 100, 200]
+                    });
+                } catch (e) {}
+            }
+        }
+
         function updateRoomListener() {
             saveConfig();
 
@@ -759,6 +825,9 @@
 
                     alertBox.innerText = `TOC-TOC da ${name}! ${icon}${countText}`;
                     alertBox.classList.add('show');
+
+                    // Notifica Push a schermo chiuso
+                    sendSystemNotification("TOC-TOC!", `${name} ti ha mandato un Toc-Toc nella stanza ${activeRoom}!`);
                     
                     setTimeout(() => {
                         alertBox.classList.remove('show');
