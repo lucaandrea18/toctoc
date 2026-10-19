@@ -17,7 +17,7 @@
 
         body {
             margin: 0;
-            padding: 12px 16px;
+            padding: 10px 14px;
             background-color: var(--bg-color);
             color: var(--text-color);
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -25,9 +25,9 @@
             flex-direction: column;
             align-items: center;
             justify-content: space-between;
-            min-height: 96vh;
+            min-height: 98vh;
             box-sizing: border-box;
-            overflow: hidden;
+            overflow-x: hidden;
             transition: background-color 0.4s ease;
             -webkit-tap-highlight-color: transparent;
         }
@@ -37,17 +37,17 @@
             width: 100%;
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 8px;
         }
 
         h1 {
-            font-size: 22px;
+            font-size: 24px;
             margin: 0;
             letter-spacing: 1.5px;
             font-weight: 800;
         }
 
-        /* Caselle Nome e Stanza Ampie */
+        /* Caselle Nome e Stanza Grandi */
         .input-group {
             display: flex;
             gap: 8px;
@@ -56,24 +56,19 @@
 
         .main-input {
             flex: 1;
-            background: rgba(255, 255, 255, 0.12);
-            border: 1.5px solid rgba(255, 255, 255, 0.25);
+            background: rgba(255, 255, 255, 0.15);
+            border: 2px solid rgba(255, 255, 255, 0.3);
             color: #fff;
-            padding: 10px 12px;
-            border-radius: 14px;
-            font-size: 14px;
-            font-weight: 600;
+            padding: 10px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: bold;
             text-align: center;
             outline: none;
             box-sizing: border-box;
         }
 
-        .main-input::placeholder {
-            color: #aaa;
-            font-weight: normal;
-        }
-
-        /* Pulsanti Stanze Grandi e Comodi */
+        /* Tasti Stanze */
         .rooms-row {
             display: flex;
             justify-content: space-between;
@@ -83,48 +78,62 @@
 
         .room-btn {
             flex: 1;
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: #ccc;
-            padding: 8px 4px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: 600;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            color: #ddd;
+            padding: 8px 2px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: bold;
             cursor: pointer;
-            transition: all 0.2s ease;
         }
 
         .room-btn.active {
             background: #2ed573;
             border-color: #2ed573;
             color: #fff;
-            font-weight: bold;
-            box-shadow: 0 3px 10px rgba(46, 213, 115, 0.3);
+            box-shadow: 0 2px 8px rgba(46, 213, 115, 0.4);
         }
 
-        /* Contatori */
+        /* Sezione Contatori Dettagliati */
+        .stats-container {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 14px;
+            padding: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 6px;
-            font-size: 11px;
-            margin-top: 2px;
-            background: rgba(255, 255, 255, 0.06);
-            padding: 8px;
-            border-radius: 12px;
+            gap: 4px;
+            font-size: 12px;
         }
 
         .stat-box {
             text-align: center;
-            color: #bbb;
+            color: #ccc;
         }
 
         .stat-box strong {
             color: #fff;
-            font-size: 13px;
+            font-size: 15px;
         }
 
-        /* Selector Suono e Tasti Controllo */
+        .type-breakdown {
+            display: flex;
+            justify-content: space-around;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 6px;
+            font-size: 13px;
+            font-weight: bold;
+            color: #f1f2f6;
+        }
+
+        /* Sezione Suoni e Controlli Grandi */
         .controls-row {
             display: flex;
             justify-content: center;
@@ -134,13 +143,13 @@
 
         .sound-btn, .toggle-btn, .premium-btn, .reset-btn {
             flex: 1;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.12);
+            border: 1.5px solid rgba(255, 255, 255, 0.25);
             color: white;
-            padding: 7px 4px;
+            padding: 9px 4px;
             border-radius: 12px;
-            font-size: 11px;
-            font-weight: 600;
+            font-size: 13px;
+            font-weight: bold;
             cursor: pointer;
         }
 
@@ -156,7 +165,7 @@
         }
 
         .reset-btn {
-            background: rgba(231, 76, 60, 0.25);
+            background: rgba(231, 76, 60, 0.3);
             border-color: #e74c3c;
             color: #ff6b6b;
         }
@@ -169,16 +178,16 @@
             justify-content: center;
             position: relative;
             width: 100%;
-            margin: 10px 0;
+            margin: 8px 0;
         }
 
         .sender-alert {
             position: absolute;
-            top: -15px;
+            top: -10px;
             background: #ff4757;
             color: white;
-            padding: 10px 20px;
-            border-radius: 20px;
+            padding: 8px 18px;
+            border-radius: 18px;
             font-size: 15px;
             font-weight: bold;
             box-shadow: 0 4px 15px rgba(0,0,0,0.6);
@@ -196,14 +205,14 @@
         }
 
         .tap-button {
-            width: 175px;
-            height: 175px;
+            width: 160px;
+            height: 160px;
             border-radius: 50%;
             background: linear-gradient(135deg, #ff4757, #ff6b81);
             border: none;
-            box-shadow: 0 12px 35px rgba(255, 71, 87, 0.45);
+            box-shadow: 0 10px 30px rgba(255, 71, 87, 0.5);
             color: white;
-            font-size: 20px;
+            font-size: 22px;
             font-weight: 800;
             cursor: pointer;
             display: flex;
@@ -229,7 +238,7 @@
 
         .floating-emoji {
             position: absolute;
-            font-size: 28px;
+            font-size: 30px;
             animation: floatUp 2s ease-out forwards;
         }
 
@@ -252,24 +261,26 @@
             border: none;
             padding: 10px 20px;
             border-radius: 20px;
-            font-size: 13px;
+            font-size: 14px;
             font-weight: bold;
             cursor: pointer;
             text-decoration: none;
             box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
         }
 
+        /* Banner Pubblicitario Spazioso */
         .ad-banner {
             width: 100%;
             max-width: 320px;
-            height: 45px;
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px dashed rgba(255, 255, 255, 0.2);
+            height: 50px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px dashed rgba(255, 255, 255, 0.3);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 11px;
-            opacity: 0.5;
+            font-size: 12px;
+            font-weight: bold;
+            color: #aaa;
             border-radius: 8px;
         }
     </style>
@@ -281,21 +292,28 @@
         
         <div class="input-group">
             <input type="text" id="usernameInput" class="main-input" placeholder="Il tuo Nome" onchange="saveConfig()">
-            <input type="text" id="roomInput" class="main-input" placeholder="Stanza libera" onchange="selectCustomRoom()">
+            <input type="text" id="roomInput" class="main-input" placeholder="Nome Stanza" onchange="selectCustomRoom()">
         </div>
 
         <div class="rooms-row">
-            <button class="room-btn" onclick="setRoom('generale')">🌐 Gen</button>
+            <button class="room-btn" onclick="setRoom('generale')">🌐 Generale</button>
             <button class="room-btn" onclick="setRoom('moglie')">❤️ Moglie</button>
             <button class="room-btn" onclick="setRoom('sorella')">👧 Sorella</button>
             <button class="room-btn" onclick="setRoom('amico')">🥊 Amico</button>
         </div>
 
-        <div class="stats-grid">
-            <div class="stat-box">Oggi<br><strong id="statDay">0</strong></div>
-            <div class="stat-box">Sett.<br><strong id="statWeek">0</strong></div>
-            <div class="stat-box">Mese<br><strong id="statMonth">0</strong></div>
-            <div class="stat-box">Anno<br><strong id="statYear">0</strong></div>
+        <div class="stats-container">
+            <div class="stats-grid">
+                <div class="stat-box">Oggi<br><strong id="statDay">0</strong></div>
+                <div class="stat-box">Sett.<br><strong id="statWeek">0</strong></div>
+                <div class="stat-box">Mese<br><strong id="statMonth">0</strong></div>
+                <div class="stat-box">Anno<br><strong id="statYear">0</strong></div>
+            </div>
+            <div class="type-breakdown">
+                <span>🚪 Porta: <span id="countPorta">0</span></span>
+                <span>💓 Cuore: <span id="countCuore">0</span></span>
+                <span>✨ Magia: <span id="countMagia">0</span></span>
+            </div>
         </div>
 
         <div class="controls-row">
@@ -305,7 +323,7 @@
         </div>
 
         <div class="controls-row">
-            <button id="soundToggle" class="toggle-btn active" onclick="toggleSoundState()">🔊 Audio</button>
+            <button id="soundToggle" class="toggle-btn active" onclick="toggleSoundState()">🔊 Audio: ON</button>
             <button class="premium-btn" onclick="openPremium()">⭐ Premium</button>
             <button class="reset-btn" onclick="resetStats()">🗑️ Azzera</button>
         </div>
@@ -320,8 +338,8 @@
     </div>
 
     <div class="footer">
+        <div class="ad-banner">📢 Spazio Banner Pubblicitario</div>
         <a id="whatsappShare" class="whatsapp-btn" href="#" target="_blank">Invita su WhatsApp</a>
-        <div class="ad-banner">Spazio Banner Pubblicitario</div>
     </div>
 
     <script>
@@ -370,8 +388,10 @@
             });
         }
 
+        // Statistiche estese con contatori per tipo di suono
         let stats = JSON.parse(localStorage.getItem('toctoc_stats')) || {
             day: 0, week: 0, month: 0, year: 0, total: 0,
+            porta: 0, cuore: 0, magia: 0,
             lastDay: new Date().getDate()
         };
 
@@ -393,7 +413,7 @@
 
         function resetStats() {
             if(confirm("Vuoi azzerare tutte le statistiche?")) {
-                stats = { day: 0, week: 0, month: 0, year: 0, total: 0, lastDay: new Date().getDate() };
+                stats = { day: 0, week: 0, month: 0, year: 0, total: 0, porta: 0, cuore: 0, magia: 0, lastDay: new Date().getDate() };
                 saveStats();
                 updateStatsDisplay();
             }
@@ -408,12 +428,12 @@
         function toggleSoundState() {
             soundEnabled = !soundEnabled;
             let btn = document.getElementById('soundToggle');
-            btn.innerText = soundEnabled ? "🔊 Audio" : "🔇 Muto";
+            btn.innerText = soundEnabled ? "🔊 Audio: ON" : "🔇 Audio: OFF";
             btn.classList.toggle('active', soundEnabled);
         }
 
         function openPremium() {
-            alert("Versione Premium Toc-Toc: Funzioni sbloccate!");
+            alert("Versione Premium Toc-Toc: Funzioni sbloccate e zero pubblicità!");
         }
 
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -470,6 +490,11 @@
             stats.month++;
             stats.year++;
             stats.total++;
+
+            if (soundType === 'porta') stats.porta = (stats.porta || 0) + 1;
+            if (soundType === 'cuore') stats.cuore = (stats.cuore || 0) + 1;
+            if (soundType === 'magia') stats.magia = (stats.magia || 0) + 1;
+
             saveStats();
             updateStatsDisplay();
 
@@ -521,6 +546,10 @@
             document.getElementById('statWeek').innerText = stats.week;
             document.getElementById('statMonth').innerText = stats.month;
             document.getElementById('statYear').innerText = stats.year;
+
+            document.getElementById('countPorta').innerText = stats.porta || 0;
+            document.getElementById('countCuore').innerText = stats.cuore || 0;
+            document.getElementById('countMagia').innerText = stats.magia || 0;
         }
 
         function updateRoomListener() {
