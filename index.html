@@ -274,7 +274,6 @@
             100% { transform: translateY(-170px) scale(1.4); opacity: 0; }
         }
 
-        /* Overlay per le animazioni speciali dei 200 tocchi */
         .special-overlay {
             position: fixed;
             top: 0;
@@ -361,7 +360,7 @@
         <h1>TOC-TOC 💗</h1>
         
         <div class="user-box">
-            <input type="text" id="usernameInput" class="main-input" placeholder="Il tuo Nome" onchange="saveConfig()">
+            <input type="text" id="usernameInput" class="main-input" placeholder="Il tuo Nome" oninput="saveConfig()">
         </div>
 
         <div class="add-room-box">
@@ -386,9 +385,9 @@
         </div>
 
         <div class="controls-row">
-            <button class="sound-btn active" onclick="setSound('porta')">🚪 Porta</button>
-            <button class="sound-btn" onclick="setSound('cuore')">💓 Cuore</button>
-            <button class="sound-btn" onclick="setSound('magia')">✨ Magia</button>
+            <button class="sound-btn active" onclick="setSound(event, 'porta')">🚪 Porta</button>
+            <button class="sound-btn" onclick="setSound(event, 'cuore')">💓 Cuore</button>
+            <button class="sound-btn" onclick="setSound(event, 'magia')">✨ Magia</button>
         </div>
 
         <div class="controls-row">
@@ -406,7 +405,6 @@
         </button>
     </div>
 
-    <!-- Overlay per gli effetti speciali a quota 200 -->
     <div id="specialOverlay" class="special-overlay">
         <div id="specialIcon" class="mj-silhouette">🕺</div>
         <div id="specialMessage" class="special-text">TRAGUARDO 200 TOCCHI!</div>
@@ -515,11 +513,267 @@
             }
         }
 
-        function setSound(type) {
+        function setSound(e, type) {
             currentSound = type;
             document.querySelectorAll('.sound-btn').forEach(b => b.classList.remove('active'));
-            event.target.classList.add('active');
+            if (e && e.target) {
+                e.target.classList.add('active');
+            }
         }
 
         function toggleSoundState() {
-            soundEnabled = !
+            soundEnabled = !soundEnabled;
+            let btn = document.getElementById('soundToggle');
+            btn.innerText = soundEnabled ? "🔊 Audio: ON" : "🔇 Audio: OFF";
+            btn.classList.toggle('active', soundEnabled);
+        }
+
+        function openPremium() {
+            alert("Versione Premium Toc-Toc: Funzioni sbloccate e zero pubblicità!");
+        }
+
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        function playSound(type) {
+            if (!soundEnabled) return;
+            if (audioCtx.state === 'suspended') { audioCtx.resume(); }
+
+            if (type === 'porta') {
+                playTone(220, 0.08, 'triangle');
+                setTimeout(() => playTone(260, 0.12, 'triangle'), 120);
+            } else if (type === 'cuore') {
+                playTone(120, 0.1, 'sine');
+                setTimeout(() => playTone(100, 0.15, 'sine'), 180);
+            } else if (type === 'magia') {
+                playTone(400, 0.08, 'sine');
+                setTimeout(() => playTone(600, 0.08, 'sine'), 80);
+                setTimeout(() => playTone(880, 0.15, 'sine'), 160);
+            }
+        }
+
+        function playTone(freq, duration, type) {
+            try {
+                let osc = audioCtx.createOscillator();
+                let gain = audioCtx.createGain();
+                osc.type = type;
+                osc.frequency.value = freq;
+                gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + duration);
+            } catch (e) {}
+        }
+
+        function playMichaelJacksonShow() {
+            if (!soundEnabled) return;
+            if (audioCtx.state === 'suspended') { audioCtx.resume(); }
+
+            showSpecialOverlay('🕺', 'SPECIALE ANDREA: 200 TOCCHI!\nMICHAEL JACKSON');
+
+            const baseNotes = [185.00, 277.18, 329.63, 369.99, 329.63, 277.18, 246.94, 277.18];
+            const tempo = 180;
+            const loops = 4;
+
+            for (let l = 0; l < loops; l++) {
+                baseNotes.forEach((freq, index) => {
+                    setTimeout(() => {
+                        playTone(freq, 0.14, 'sawtooth');
+                    }, (l * baseNotes.length * tempo) + (index * tempo));
+                });
+            }
+
+            setTimeout(() => {
+                hideSpecialOverlay();
+            }, 7000);
+        }
+
+        function playWifeThanksShow() {
+            if (!soundEnabled) return;
+            
+            showSpecialOverlay('💖', 'SPECIALE MOGLIE: 200 TOCCHI!\nGRAZIEEEEE!');
+
+            if ('speechSynthesis' in window) {
+                let utterance = new SpeechSynthesisUtterance('Grazieeeee mille amore mio!');
+                utterance.lang = 'it-IT';
+                utterance.rate = 0.9;
+                utterance.pitch = 1.3;
+                window.speechSynthesis.speak(utterance);
+            }
+
+            setTimeout(() => {
+                hideSpecialOverlay();
+            }, 5000);
+        }
+
+        function playKPopShow() {
+            if (!soundEnabled) return;
+            if (audioCtx.state === 'suspended') { audioCtx.resume(); }
+
+            showSpecialOverlay('🌟', 'SPECIALE SORELLA: 200 TOCCHI!\nK-POP VIBES');
+
+            const kpopNotes = [523.25, 659.25, 783.99, 1046.50, 783.99, 659.25, 523.25, 587.33, 659.25, 523.25];
+            const tempo = 150;
+            const loops = 4;
+
+            for (let l = 0; l < loops; l++) {
+                kpopNotes.forEach((freq, index) => {
+                    setTimeout(() => {
+                        playTone(freq, 0.1, 'sine');
+                    }, (l * kpopNotes.length * tempo) + (index * tempo));
+                });
+            }
+
+            setTimeout(() => {
+                hideSpecialOverlay();
+            }, 7000);
+        }
+
+        function showSpecialOverlay(icon, text) {
+            const overlay = document.getElementById('specialOverlay');
+            document.getElementById('specialIcon').innerText = icon;
+            document.getElementById('specialMessage').innerText = text;
+            overlay.classList.add('show');
+            triggerRainbowEffect();
+        }
+
+        function hideSpecialOverlay() {
+            const overlay = document.getElementById('specialOverlay');
+            overlay.classList.remove('show');
+        }
+
+        function sendTap() {
+            let senderName = document.getElementById('usernameInput').value.trim() || 'Qualcuno';
+
+            playSound(currentSound);
+            incrementStats(currentSound);
+
+            let countForType = (stats[currentSound] || 1);
+
+            db.ref('rooms/' + activeRoom).set({
+                sound: currentSound,
+                sender: senderName,
+                count: countForType,
+                timestamp: Date.now()
+            });
+        }
+
+        function incrementStats(soundType) {
+            stats.day++;
+            stats.week++;
+            stats.month++;
+            stats.year++;
+            stats.total++;
+
+            if (soundType === 'porta') stats.porta = (stats.porta || 0) + 1;
+            if (soundType === 'cuore') stats.cuore = (stats.cuore || 0) + 1;
+            if (soundType === 'magia') stats.magia = (stats.magia || 0) + 1;
+
+            saveStats();
+            updateStatsDisplay();
+
+            if (stats.total % 100 === 0) {
+                triggerRainbowEffect();
+                spawnThemeEmojis(soundType);
+
+                if (stats.total % 200 === 0) {
+                    if (activeRoom === 'andrea' || activeRoom === 'figlio') {
+                        playMichaelJacksonShow();
+                    } else if (activeRoom === 'moglie') {
+                        playWifeThanksShow();
+                    } else if (activeRoom === 'sorella') {
+                        playKPopShow();
+                    }
+                }
+            }
+        }
+
+        function triggerRainbowEffect() {
+            const colors = ['#ff4757', '#2ed573', '#1e90ff', '#ffa502', '#9b59b6', '#ff6b81'];
+            let i = 0;
+            let interval = setInterval(() => {
+                document.body.style.backgroundColor = colors[i % colors.length];
+                i++;
+                if (i > 10) {
+                    clearInterval(interval);
+                    document.body.style.backgroundColor = '#08080a';
+                }
+            }, 300);
+        }
+
+        function spawnThemeEmojis(soundType) {
+            const box = document.getElementById('emojiBox');
+            let emojis = ['🎉', '🎊', '🌈', '🌟', '🎵', '🕺'];
+            
+            if (soundType === 'cuore') {
+                emojis = ['❤️', '💖', '💗', '💓', '🎉', '🌈'];
+            } else if (soundType === 'magia') {
+                emojis = ['✨', '🪄', '🌟', '💫', '🎉', '🌈'];
+            } else if (soundType === 'porta') {
+                emojis = ['🚪', '🏡', '🔑', '🔔', '🎉', '🌈'];
+            }
+
+            for (let i = 0; i < 25; i++) {
+                let span = document.createElement('span');
+                span.className = 'floating-emoji';
+                span.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+                span.style.left = Math.random() * 80 + 10 + '%';
+                span.style.bottom = '20px';
+                span.style.animationDuration = (1.5 + Math.random()) + 's';
+                box.appendChild(span);
+                setTimeout(() => span.remove(), 2200);
+            }
+        }
+
+        function updateStatsDisplay() {
+            document.getElementById('statDay').innerText = stats.day;
+            document.getElementById('statWeek').innerText = stats.week;
+            document.getElementById('statMonth').innerText = stats.month;
+            document.getElementById('statYear').innerText = stats.year;
+
+            document.getElementById('countPorta').innerText = stats.porta || 0;
+            document.getElementById('countCuore').innerText = stats.cuore || 0;
+            document.getElementById('countMagia').innerText = stats.magia || 0;
+        }
+
+        function updateRoomListener() {
+            saveConfig();
+
+            if (currentRoomRef) {
+                currentRoomRef.off();
+            }
+
+            currentRoomRef = db.ref('rooms/' + activeRoom);
+            currentRoomRef.on('value', (snapshot) => {
+                const data = snapshot.val();
+                let myName = document.getElementById('usernameInput').value.trim() || 'Luca';
+                
+                if (data && data.timestamp > Date.now() - 3000 && data.sender !== myName) {
+                    playSound(data.sound || 'porta');
+                    
+                    let alertBox = document.getElementById('senderAlert');
+                    let name = data.sender || 'Qualcuno';
+                    let icon = data.sound === 'cuore' ? '💓' : (data.sound === 'magia' ? '✨' : '🚪');
+                    let countText = data.count ? `\n(${data.sound.toUpperCase()} #${data.count})` : '';
+
+                    alertBox.innerText = `TOC-TOC da ${name}! ${icon}${countText}`;
+                    alertBox.classList.add('show');
+                    
+                    setTimeout(() => {
+                        alertBox.classList.remove('show');
+                    }, 2800);
+                }
+            });
+        }
+
+        function updateWhatsappLink() {
+            const shareText = encodeURIComponent(`Entra nella stanza "${activeRoom}" su Toc-Toc per scambiarci i segnali! Clicca qui: https://lucaandrea18.github.io/toctoc/`);
+            document.getElementById('whatsappShare').href = `https://api.whatsapp.com/send?text=${shareText}`;
+        }
+
+        renderRooms();
+        updateRoomListener();
+    </script>
+</body>
+</html>
