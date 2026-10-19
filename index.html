@@ -274,6 +274,50 @@
             100% { transform: translateY(-170px) scale(1.4); opacity: 0; }
         }
 
+        /* Overlay per le animazioni speciali dei 200 tocchi */
+        .special-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 999;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+        }
+
+        .special-overlay.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .mj-silhouette {
+            font-size: 110px;
+            animation: moonwalkBounce 1s infinite alternate ease-in-out;
+            filter: drop-shadow(0 0 20px #ff4757);
+        }
+
+        @keyframes moonwalkBounce {
+            0% { transform: translateX(-30px) scale(1); }
+            100% { transform: translateX(30px) scale(1.1); }
+        }
+
+        .special-text {
+            color: #fff;
+            font-size: 26px;
+            font-weight: 900;
+            margin-top: 15px;
+            text-align: center;
+            text-shadow: 0 0 10px rgba(255,255,255,0.6);
+            letter-spacing: 2px;
+        }
+
         .footer {
             width: 100%;
             display: flex;
@@ -360,6 +404,12 @@
         <button class="tap-button" onclick="sendTap()">
             <span>TOC-TOC</span>
         </button>
+    </div>
+
+    <!-- Overlay per gli effetti speciali a quota 200 -->
+    <div id="specialOverlay" class="special-overlay">
+        <div id="specialIcon" class="mj-silhouette">🕺</div>
+        <div id="specialMessage" class="special-text">TRAGUARDO 200 TOCCHI!</div>
     </div>
 
     <div class="footer">
@@ -472,190 +522,4 @@
         }
 
         function toggleSoundState() {
-            soundEnabled = !soundEnabled;
-            let btn = document.getElementById('soundToggle');
-            btn.innerText = soundEnabled ? "🔊 Audio: ON" : "🔇 Audio: OFF";
-            btn.classList.toggle('active', soundEnabled);
-        }
-
-        function openPremium() {
-            alert("Versione Premium Toc-Toc: Funzioni sbloccate e zero pubblicità!");
-        }
-
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-
-        function playSound(type) {
-            if (!soundEnabled) return;
-            if (audioCtx.state === 'suspended') { audioCtx.resume(); }
-
-            if (type === 'porta') {
-                playTone(220, 0.08, 'triangle');
-                setTimeout(() => playTone(260, 0.12, 'triangle'), 120);
-            } else if (type === 'cuore') {
-                playTone(120, 0.1, 'sine');
-                setTimeout(() => playTone(100, 0.15, 'sine'), 180);
-            } else if (type === 'magia') {
-                playTone(400, 0.08, 'sine');
-                setTimeout(() => playTone(600, 0.08, 'sine'), 80);
-                setTimeout(() => playTone(880, 0.15, 'sine'), 160);
-            }
-        }
-
-        function playTone(freq, duration, type) {
-            try {
-                let osc = audioCtx.createOscillator();
-                let gain = audioCtx.createGain();
-                osc.type = type;
-                osc.frequency.value = freq;
-                gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
-                osc.connect(gain);
-                gain.connect(audioCtx.destination);
-                osc.start();
-                osc.stop(audioCtx.currentTime + duration);
-            } catch (e) {}
-        }
-
-        /* Melodia Michael Jackson (Billie Jean Bassline) per Andrea */
-        function playMichaelJacksonMelody() {
-            if (!soundEnabled) return;
-            if (audioCtx.state === 'suspended') { audioCtx.resume(); }
-
-            const notes = [185.00, 277.18, 329.63, 369.99, 329.63, 277.18, 246.94, 277.18];
-            const tempo = 180;
-
-            notes.forEach((freq, index) => {
-                setTimeout(() => {
-                    playTone(freq, 0.14, 'sawtooth');
-                }, index * tempo);
-            });
-        }
-
-        function sendTap() {
-            let senderName = document.getElementById('usernameInput').value.trim() || 'Qualcuno';
-
-            playSound(currentSound);
-            incrementStats(currentSound);
-
-            let countForType = (stats[currentSound] || 1);
-
-            db.ref('rooms/' + activeRoom).set({
-                sound: currentSound,
-                sender: senderName,
-                count: countForType,
-                timestamp: Date.now()
-            });
-        }
-
-        function incrementStats(soundType) {
-            stats.day++;
-            stats.week++;
-            stats.month++;
-            stats.year++;
-            stats.total++;
-
-            if (soundType === 'porta') stats.porta = (stats.porta || 0) + 1;
-            if (soundType === 'cuore') stats.cuore = (stats.cuore || 0) + 1;
-            if (soundType === 'magia') stats.magia = (stats.magia || 0) + 1;
-
-            saveStats();
-            updateStatsDisplay();
-
-            if (stats.total % 100 === 0) {
-                triggerRainbowEffect();
-                spawnThemeEmojis(soundType);
-
-                if ((activeRoom === 'andrea' || activeRoom === 'figlio') && stats.total % 200 === 0) {
-                    playMichaelJacksonMelody();
-                }
-            }
-        }
-
-        function triggerRainbowEffect() {
-            const colors = ['#ff4757', '#2ed573', '#1e90ff', '#ffa502', '#9b59b6', '#ff6b81'];
-            let i = 0;
-            let interval = setInterval(() => {
-                document.body.style.backgroundColor = colors[i % colors.length];
-                i++;
-                if (i > 10) {
-                    clearInterval(interval);
-                    document.body.style.backgroundColor = '#08080a';
-                }
-            }, 300);
-        }
-
-        function spawnThemeEmojis(soundType) {
-            const box = document.getElementById('emojiBox');
-            let emojis = ['🎉', '🎊', '🌈', '🌟', '🎵', '🕺'];
-            
-            if (soundType === 'cuore') {
-                emojis = ['❤️', '💖', '💗', '💓', '🎉', '🌈'];
-            } else if (soundType === 'magia') {
-                emojis = ['✨', '🪄', '🌟', '💫', '🎉', '🌈'];
-            } else if (soundType === 'porta') {
-                emojis = ['🚪', '🏡', '🔑', '🔔', '🎉', '🌈'];
-            }
-
-            for (let i = 0; i < 25; i++) {
-                let span = document.createElement('span');
-                span.className = 'floating-emoji';
-                span.innerText = emojis[Math.floor(Math.random() * emojis.length)];
-                span.style.left = Math.random() * 80 + 10 + '%';
-                span.style.bottom = '20px';
-                span.style.animationDuration = (1.5 + Math.random()) + 's';
-                box.appendChild(span);
-                setTimeout(() => span.remove(), 2200);
-            }
-        }
-
-        function updateStatsDisplay() {
-            document.getElementById('statDay').innerText = stats.day;
-            document.getElementById('statWeek').innerText = stats.week;
-            document.getElementById('statMonth').innerText = stats.month;
-            document.getElementById('statYear').innerText = stats.year;
-
-            document.getElementById('countPorta').innerText = stats.porta || 0;
-            document.getElementById('countCuore').innerText = stats.cuore || 0;
-            document.getElementById('countMagia').innerText = stats.magia || 0;
-        }
-
-        function updateRoomListener() {
-            saveConfig();
-
-            if (currentRoomRef) {
-                currentRoomRef.off();
-            }
-
-            currentRoomRef = db.ref('rooms/' + activeRoom);
-            currentRoomRef.on('value', (snapshot) => {
-                const data = snapshot.val();
-                let myName = document.getElementById('usernameInput').value.trim() || 'Luca';
-                
-                if (data && data.timestamp > Date.now() - 3000 && data.sender !== myName) {
-                    playSound(data.sound || 'porta');
-                    
-                    let alertBox = document.getElementById('senderAlert');
-                    let name = data.sender || 'Qualcuno';
-                    let icon = data.sound === 'cuore' ? '💓' : (data.sound === 'magia' ? '✨' : '🚪');
-                    let countText = data.count ? `\n(${data.sound.toUpperCase()} #${data.count})` : '';
-
-                    alertBox.innerText = `TOC-TOC da ${name}! ${icon}${countText}`;
-                    alertBox.classList.add('show');
-                    
-                    setTimeout(() => {
-                        alertBox.classList.remove('show');
-                    }, 2800);
-                }
-            });
-        }
-
-        function updateWhatsappLink() {
-            const shareText = encodeURIComponent(`Entra nella stanza "${activeRoom}" su Toc-Toc per scambiarci i segnali! Clicca qui: https://lucaandrea18.github.io/toctoc/`);
-            document.getElementById('whatsappShare').href = `https://api.whatsapp.com/send?text=${shareText}`;
-        }
-
-        renderRooms();
-        updateRoomListener();
-    </script>
-</body>
-</html>
+            soundEnabled = !
