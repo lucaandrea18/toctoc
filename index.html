@@ -18,10 +18,8 @@
         * {
             -webkit-touch-callout: none;
             -webkit-user-select: none;
-            -khtml-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
             user-select: none;
+            box-sizing: border-box;
         }
 
         input {
@@ -40,7 +38,6 @@
             align-items: center;
             justify-content: space-between;
             min-height: 98vh;
-            box-sizing: border-box;
             overflow-x: hidden;
             transition: background-color 0.4s ease;
             -webkit-tap-highlight-color: transparent;
@@ -76,7 +73,6 @@
             font-weight: bold;
             text-align: center;
             outline: none;
-            box-sizing: border-box;
         }
 
         .add-room-box {
@@ -338,4 +334,237 @@
 
         .special-overlay.show {
             opacity: 1;
-            pointer-
+            pointer-events: auto;
+        }
+
+        .special-icon-anim {
+            font-size: 100px;
+            animation: bounceAnim 1s infinite alternate ease-in-out;
+            filter: drop-shadow(0 0 20px #2ed573);
+        }
+
+        @keyframes bounceAnim {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.2); }
+        }
+
+        .special-text {
+            color: #fff;
+            font-size: 24px;
+            font-weight: 900;
+            margin-top: 15px;
+            text-align: center;
+            text-shadow: 0 0 10px rgba(255,255,255,0.6);
+            letter-spacing: 2px;
+        }
+
+        .footer {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .ad-banner {
+            width: 100%;
+            max-width: 320px;
+            height: 38px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px dashed rgba(255, 255, 255, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: bold;
+            color: #aaa;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>TOC-TOC 💗</h1>
+        
+        <div class="user-box">
+            <input type="text" id="usernameInput" class="main-input" placeholder="Il tuo Nome" oninput="saveConfig()">
+        </div>
+
+        <div class="add-room-box">
+            <input type="text" id="newRoomInput" class="main-input" placeholder="Crea Stanza (es. Andrea)">
+            <button class="add-btn" onclick="addNewRoom()">+</button>
+        </div>
+
+        <div class="rooms-grid" id="roomsList"></div>
+
+        <div class="stats-container">
+            <div class="stats-header-title" id="statsTitle">STATISTICHE STANZA: GENERALE</div>
+            <div class="stats-grid">
+                <div class="stat-box">Oggi<br><strong id="statDay">0</strong></div>
+                <div class="stat-box">Sett.<br><strong id="statWeek">0</strong></div>
+                <div class="stat-box">Mese<br><strong id="statMonth">0</strong></div>
+                <div class="stat-box">Anno<br><strong id="statYear">0</strong></div>
+            </div>
+            <div class="type-breakdown">
+                <span>🚪 Porta: <span id="countPorta">0</span></span>
+                <span>💓 Cuore: <span id="countCuore">0</span></span>
+                <span>✨ Magia: <span id="countMagia">0</span></span>
+                <span>🌐 Tot App: <span id="countGlobalTotal">0</span></span>
+            </div>
+        </div>
+
+        <div class="controls-row">
+            <button class="sound-btn active" onclick="setSound(event, 'porta')">🚪 Porta</button>
+            <button class="sound-btn" onclick="setSound(event, 'cuore')">💓 Cuore</button>
+            <button class="sound-btn" onclick="setSound(event, 'magia')">✨ Magia</button>
+        </div>
+
+        <div class="controls-row">
+            <button id="soundToggle" class="toggle-btn active" onclick="toggleSoundState()">🔊 Audio</button>
+            <a id="whatsappShareBtn" class="whatsapp-btn-side" href="#" onclick="shareOnWhatsApp(event)">💬 WhatsApp</a>
+            <button class="premium-btn" onclick="openPremium()">⭐ Premium</button>
+            <button class="reset-btn" onclick="resetStats()">🗑️ Azzera</button>
+        </div>
+    </header>
+
+    <div class="tap-container">
+        <div id="senderAlert" class="sender-alert">TOC-TOC!</div>
+        <div class="emoji-container" id="emojiBox"></div>
+        <button class="tap-button" id="mainTapBtn" onclick="sendTap()" oncontextmenu="return false;">
+            <span>TOC-TOC</span>
+        </button>
+    </div>
+
+    <div id="specialOverlay" class="special-overlay">
+        <div id="specialIcon" class="special-icon-anim">🆗</div>
+        <div id="specialMessage" class="special-text">TRAGUARDO RAGGIUNTO!</div>
+    </div>
+
+    <div class="footer">
+        <div class="ad-banner">📢 Spazio Banner Pubblicitario</div>
+    </div>
+
+    <script>
+        const firebaseConfig = {
+            databaseURL: "https://toctoc-302c3-default-rtdb.firebaseio.com/"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        let currentSound = 'porta';
+        let soundEnabled = true;
+        let currentRoomRef = null;
+        let audioCtx = null;
+
+        let savedRooms = JSON.parse(localStorage.getItem('toctoc_rooms_list')) || ['generale', 'moglie', 'sorella', 'andrea'];
+        let activeRoom = localStorage.getItem('toctoc_room') || 'generale';
+        let storedName = localStorage.getItem('toctoc_username') || '';
+
+        document.getElementById('usernameInput').value = storedName;
+
+        function saveConfig() {
+            let nameVal = document.getElementById('usernameInput').value.trim();
+            localStorage.setItem('toctoc_username', nameVal);
+        }
+
+        function renderRooms() {
+            const list = document.getElementById('roomsList');
+            list.innerHTML = '';
+            
+            savedRooms.forEach(room => {
+                const chip = document.createElement('div');
+                chip.className = `room-chip ${room === activeRoom ? 'active' : ''}`;
+                chip.onclick = () => selectRoom(room);
+
+                chip.innerHTML = `
+                    <span>🏠 ${room}</span>
+                    ${room !== 'generale' ? `<span class="delete-room" onclick="deleteRoom(event, '${room}')">✕</span>` : ''}
+                `;
+                list.appendChild(chip);
+            });
+            localStorage.setItem('toctoc_rooms_list', JSON.stringify(savedRooms));
+        }
+
+        function addNewRoom() {
+            let input = document.getElementById('newRoomInput');
+            let roomName = input.value.trim().toLowerCase();
+            if (roomName && !savedRooms.includes(roomName)) {
+                savedRooms.push(roomName);
+                input.value = '';
+                selectRoom(roomName);
+            }
+        }
+
+        function deleteRoom(e, roomName) {
+            e.stopPropagation();
+            savedRooms = savedRooms.filter(r => r !== roomName);
+            if (activeRoom === roomName) {
+                selectRoom('generale');
+            } else {
+                renderRooms();
+            }
+        }
+
+        function selectRoom(roomName) {
+            activeRoom = roomName;
+            localStorage.setItem('toctoc_room', activeRoom);
+            renderRooms();
+            updateRoomListener();
+            updateStatsDisplay();
+        }
+
+        function getRoomStats() {
+            let allStats = JSON.parse(localStorage.getItem('toctoc_room_stats')) || {};
+            if (!allStats[activeRoom]) {
+                allStats[activeRoom] = {
+                    day: 0, week: 0, month: 0, year: 0, total: 0,
+                    porta: 0, cuore: 0, magia: 0,
+                    lastDay: new Date().getDate()
+                };
+            }
+            return allStats;
+        }
+
+        function getGlobalTotal() {
+            return parseInt(localStorage.getItem('toctoc_global_total')) || 0;
+        }
+
+        function setGlobalTotal(val) {
+            localStorage.setItem('toctoc_global_total', val);
+        }
+
+        function saveRoomStats(allStats) {
+            localStorage.setItem('toctoc_room_stats', JSON.stringify(allStats));
+        }
+
+        function checkDateReset(roomStats) {
+            let today = new Date().getDate();
+            if (roomStats.lastDay !== today) {
+                roomStats.day = 0;
+                roomStats.lastDay = today;
+            }
+        }
+
+        function resetStats() {
+            if(confirm(`Vuoi azzerare le statistiche della stanza "${activeRoom}"?`)) {
+                let allStats = getRoomStats();
+                allStats[activeRoom] = { day: 0, week: 0, month: 0, year: 0, total: 0, porta: 0, cuore: 0, magia: 0, lastDay: new Date().getDate() };
+                saveRoomStats(allStats);
+                updateStatsDisplay();
+            }
+        }
+
+        function setSound(e, type) {
+            currentSound = type;
+            document.querySelectorAll('.sound-btn').forEach(b => b.classList.remove('active'));
+            if (e && e.target) {
+                e.target.classList.add('active');
+            }
+        }
+
+        function toggleSoundState() {
+            soundEnabled = !soundEnabled;
+            let btn = document.getElementById('soundToggle');
+            btn.innerText = soundEnabled ? "🔊 Audio" : "🔇 Audio";
+            btn.
