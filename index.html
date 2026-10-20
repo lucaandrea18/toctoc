@@ -15,7 +15,6 @@
             --text-color: #ffffff;
         }
 
-        /* Impedisce la selezione del testo in tutta l'app */
         * {
             -webkit-touch-callout: none;
             -webkit-user-select: none;
@@ -149,6 +148,14 @@
             gap: 4px;
         }
 
+        .stats-header-title {
+            font-size: 11px;
+            font-weight: bold;
+            color: #ff4757;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -270,6 +277,17 @@
             transform: scale(0.92);
         }
 
+        /* Animazione esplosione tasto a 100 tocchi */
+        .tap-button.explode {
+            animation: btnExplode 0.8s ease-out;
+        }
+
+        @keyframes btnExplode {
+            0% { transform: scale(1); box-shadow: 0 0 20px #ff4757; }
+            50% { transform: scale(1.35) rotate(5deg); box-shadow: 0 0 60px #2ed573, 0 0 90px #ff4757; }
+            100% { transform: scale(1) rotate(0deg); box-shadow: 0 10px 30px rgba(255, 71, 87, 0.5); }
+        }
+
         .emoji-container {
             position: absolute;
             width: 100%;
@@ -387,6 +405,7 @@
         <div class="rooms-grid" id="roomsList"></div>
 
         <div class="stats-container">
+            <div class="stats-header-title" id="statsTitle">STATISTICHE STANZA: GENERALE</div>
             <div class="stats-grid">
                 <div class="stat-box">Oggi<br><strong id="statDay">0</strong></div>
                 <div class="stat-box">Sett.<br><strong id="statWeek">0</strong></div>
@@ -397,6 +416,7 @@
                 <span>🚪 Porta: <span id="countPorta">0</span></span>
                 <span>💓 Cuore: <span id="countCuore">0</span></span>
                 <span>✨ Magia: <span id="countMagia">0</span></span>
+                <span>🌐 Totale App: <span id="countGlobalTotal">0</span></span>
             </div>
         </div>
 
@@ -428,7 +448,7 @@
 
     <div class="footer">
         <div class="ad-banner">📢 Spazio Banner Pubblicitario</div>
-        <a id="whatsappShare" class="whatsapp-btn" href="#" target="_blank">Invita su WhatsApp</a>
+        <button id="whatsappShare" class="whatsapp-btn" onclick="shareOnWhatsApp()">Invita su WhatsApp</button>
     </div>
 
     <script>
@@ -448,21 +468,13 @@
 
         document.getElementById('usernameInput').value = storedName;
 
-        // Richiesta permessi notifiche a schermo chiuso
         if ("Notification" in window && Notification.permission !== "granted") {
             Notification.requestPermission();
-        }
-
-        function requestNotificationPermission() {
-            if ("Notification" in window && Notification.permission === "default") {
-                Notification.requestPermission();
-            }
         }
 
         function saveConfig() {
             let nameVal = document.getElementById('usernameInput').value.trim();
             localStorage.setItem('toctoc_username', nameVal);
-            updateWhatsappLink();
         }
 
         function renderRooms() {
@@ -508,34 +520,47 @@
             localStorage.setItem('toctoc_room', activeRoom);
             renderRooms();
             updateRoomListener();
+            updateStatsDisplay();
         }
 
-        let stats = JSON.parse(localStorage.getItem('toctoc_stats')) || {
-            day: 0, week: 0, month: 0, year: 0, total: 0,
-            porta: 0, cuore: 0, magia: 0,
-            lastDay: new Date().getDate()
-        };
+        /* Gestione sia delle Statistiche di Stanza che Generali */
+        function getRoomStats() {
+            let allStats = JSON.parse(localStorage.getItem('toctoc_room_stats')) || {};
+            if (!allStats[activeRoom]) {
+                allStats[activeRoom] = {
+                    day: 0, week: 0, month: 0, year: 0, total: 0,
+                    porta: 0, cuore: 0, magia: 0,
+                    lastDay: new Date().getDate()
+                };
+            }
+            return allStats;
+        }
 
-        checkDateReset();
-        updateStatsDisplay();
+        function getGlobalTotal() {
+            return parseInt(localStorage.getItem('toctoc_global_total')) || 0;
+        }
 
-        function checkDateReset() {
+        function setGlobalTotal(val) {
+            localStorage.setItem('toctoc_global_total', val);
+        }
+
+        function saveRoomStats(allStats) {
+            localStorage.setItem('toctoc_room_stats', JSON.stringify(allStats));
+        }
+
+        function checkDateReset(roomStats) {
             let today = new Date().getDate();
-            if (stats.lastDay !== today) {
-                stats.day = 0;
-                stats.lastDay = today;
-                saveStats();
+            if (roomStats.lastDay !== today) {
+                roomStats.day = 0;
+                roomStats.lastDay = today;
             }
         }
 
-        function saveStats() {
-            localStorage.setItem('toctoc_stats', JSON.stringify(stats));
-        }
-
         function resetStats() {
-            if(confirm("Vuoi azzerare tutte le statistiche?")) {
-                stats = { day: 0, week: 0, month: 0, year: 0, total: 0, porta: 0, cuore: 0, magia: 0, lastDay: new Date().getDate() };
-                saveStats();
+            if(confirm(`Vuoi azzerare le statistiche della stanza "${activeRoom}"?`)) {
+                let allStats = getRoomStats();
+                allStats[activeRoom] = { day: 0, week: 0, month: 0, year: 0, total: 0, porta: 0, cuore: 0, magia: 0, lastDay: new Date().getDate() };
+                saveRoomStats(allStats);
                 updateStatsDisplay();
             }
         }
@@ -593,14 +618,30 @@
             } catch (e) {}
         }
 
-        /* Effetto Applausi + OK per 100, 300, 500... */
+        function playWowShow(count) {
+            if (!soundEnabled) return;
+            if (audioCtx.state === 'suspended') { audioCtx.resume(); }
+
+            showSpecialOverlay('✨🎉', `WOW! TRAGUARDO\n${count} TOCCHI!`);
+
+            const notes = [300, 450, 600, 900, 1200];
+            notes.forEach((freq, idx) => {
+                setTimeout(() => {
+                    playTone(freq, 0.15, 'sine');
+                }, idx * 90);
+            });
+
+            setTimeout(() => {
+                hideSpecialOverlay();
+            }, 3000);
+        }
+
         function playApplaudShow(count) {
             if (!soundEnabled) return;
             if (audioCtx.state === 'suspended') { audioCtx.resume(); }
 
             showSpecialOverlay('🆗👏', `GRANDE TRAGUARDO!\n${count} TOCCHI!`);
 
-            // Suono vittoria/applauso
             const notes = [261.63, 329.63, 392.00, 523.25, 659.25, 783.99];
             notes.forEach((freq, idx) => {
                 setTimeout(() => {
@@ -610,7 +651,7 @@
 
             setTimeout(() => {
                 hideSpecialOverlay();
-            }, 4500);
+            }, 4000);
         }
 
         function playMichaelJacksonShow() {
@@ -691,13 +732,13 @@
         }
 
         function sendTap() {
-            requestNotificationPermission();
             let senderName = document.getElementById('usernameInput').value.trim() || 'Qualcuno';
 
             playSound(currentSound);
             incrementStats(currentSound);
 
-            let countForType = (stats[currentSound] || 1);
+            let allStats = getRoomStats();
+            let countForType = allStats[activeRoom][currentSound] || 1;
 
             db.ref('rooms/' + activeRoom).set({
                 sound: currentSound,
@@ -708,24 +749,34 @@
         }
 
         function incrementStats(soundType) {
+            let allStats = getRoomStats();
+            let stats = allStats[activeRoom];
+
+            checkDateReset(stats);
+
             stats.day++;
             stats.week++;
             stats.month++;
             stats.year++;
             stats.total++;
 
+            // Incremento conteggio globale
+            let globalTotal = getGlobalTotal() + 1;
+            setGlobalTotal(globalTotal);
+
             if (soundType === 'porta') stats.porta = (stats.porta || 0) + 1;
             if (soundType === 'cuore') stats.cuore = (stats.cuore || 0) + 1;
             if (soundType === 'magia') stats.magia = (stats.magia || 0) + 1;
 
-            saveStats();
+            saveRoomStats(allStats);
             updateStatsDisplay();
 
+            // Esplosione del tasto e coriandoli ad OGNI 100 tocchi
             if (stats.total % 100 === 0) {
+                triggerButtonExplosion();
+                spawnConfetti();
                 triggerRainbowEffect();
-                spawnThemeEmojis(soundType);
 
-                // Se è 200, 400, 600... scattano le animazioni speciali di persona
                 if (stats.total % 200 === 0) {
                     if (activeRoom === 'andrea' || activeRoom === 'figlio') {
                         playMichaelJacksonShow();
@@ -737,9 +788,37 @@
                         playApplaudShow(stats.total);
                     }
                 } else {
-                    // Se è 100, 300, 500, 700... scattano OK e Applausi
                     playApplaudShow(stats.total);
                 }
+            } else {
+                playWowShow(stats.total);
+            }
+        }
+
+        /* Animazione esplosione tasto centrale */
+        function triggerButtonExplosion() {
+            const btn = document.getElementById('mainTapBtn');
+            btn.classList.add('explode');
+            setTimeout(() => {
+                btn.classList.remove('explode');
+            }, 800);
+        }
+
+        /* Pioggia / Esplosione di Coriandoli */
+        function spawnConfetti() {
+            const box = document.getElementById('emojiBox');
+            const confettiList = ['🎉', '🎊', '✨', '🌟', '🌈', '🥳', '🎈', '🎆', '👏', '🆗'];
+
+            for (let i = 0; i < 40; i++) {
+                let span = document.createElement('span');
+                span.className = 'floating-emoji';
+                span.innerText = confettiList[Math.floor(Math.random() * confettiList.length)];
+                span.style.left = Math.random() * 90 + 5 + '%';
+                span.style.bottom = '10px';
+                span.style.fontSize = (28 + Math.random() * 20) + 'px';
+                span.style.animationDuration = (1.2 + Math.random() * 1.5) + 's';
+                box.appendChild(span);
+                setTimeout(() => span.remove(), 2500);
             }
         }
 
@@ -756,31 +835,11 @@
             }, 300);
         }
 
-        function spawnThemeEmojis(soundType) {
-            const box = document.getElementById('emojiBox');
-            let emojis = ['🎉', '🎊', '🌈', '🌟', '🎵', '🕺', '👏', '🆗'];
-            
-            if (soundType === 'cuore') {
-                emojis = ['❤️', '💖', '💗', '💓', '🎉', '🌈', '👏'];
-            } else if (soundType === 'magia') {
-                emojis = ['✨', '🪄', '🌟', '💫', '🎉', '🌈', '👏'];
-            } else if (soundType === 'porta') {
-                emojis = ['🚪', '🏡', '🔑', '🔔', '🎉', '🌈', '👏'];
-            }
-
-            for (let i = 0; i < 25; i++) {
-                let span = document.createElement('span');
-                span.className = 'floating-emoji';
-                span.innerText = emojis[Math.floor(Math.random() * emojis.length)];
-                span.style.left = Math.random() * 80 + 10 + '%';
-                span.style.bottom = '20px';
-                span.style.animationDuration = (1.5 + Math.random()) + 's';
-                box.appendChild(span);
-                setTimeout(() => span.remove(), 2200);
-            }
-        }
-
         function updateStatsDisplay() {
+            let allStats = getRoomStats();
+            let stats = allStats[activeRoom];
+
+            document.getElementById('statsTitle').innerText = `STATISTICHE STANZA: ${activeRoom.toUpperCase()}`;
             document.getElementById('statDay').innerText = stats.day;
             document.getElementById('statWeek').innerText = stats.week;
             document.getElementById('statMonth').innerText = stats.month;
@@ -789,17 +848,22 @@
             document.getElementById('countPorta').innerText = stats.porta || 0;
             document.getElementById('countCuore').innerText = stats.cuore || 0;
             document.getElementById('countMagia').innerText = stats.magia || 0;
+            document.getElementById('countGlobalTotal').innerText = getGlobalTotal();
         }
 
         function sendSystemNotification(title, body) {
             if ("Notification" in window && Notification.permission === "granted") {
                 try {
-                    new Notification(title, {
-                        body: body,
-                        icon: './icon-192.png',
-                        vibrate: [200, 100, 200]
+                    navigator.serviceWorker.ready.then(function(registration) {
+                        registration.showNotification(title, {
+                            body: body,
+                            icon: './icon-192.png',
+                            vibrate: [200, 100, 200]
+                        });
                     });
-                } catch (e) {}
+                } catch (e) {
+                    new Notification(title, { body: body });
+                }
             }
         }
 
@@ -826,8 +890,7 @@
                     alertBox.innerText = `TOC-TOC da ${name}! ${icon}${countText}`;
                     alertBox.classList.add('show');
 
-                    // Notifica Push a schermo chiuso
-                    sendSystemNotification("TOC-TOC!", `${name} ti ha mandato un Toc-Toc nella stanza ${activeRoom}!`);
+                    sendSystemNotification("TOC-TOC!", `${name} ti ha inviato un segnale nella stanza "${activeRoom}"! 🚪💓`);
                     
                     setTimeout(() => {
                         alertBox.classList.remove('show');
@@ -836,13 +899,23 @@
             });
         }
 
-        function updateWhatsappLink() {
-            const shareText = encodeURIComponent(`Entra nella stanza "${activeRoom}" su Toc-Toc per scambiarci i segnali! Clicca qui: https://lucaandrea18.github.io/toctoc/`);
-            document.getElementById('whatsappShare').href = `https://api.whatsapp.com/send?text=${shareText}`;
+        function shareOnWhatsApp() {
+            const shareText = `Entra nella stanza "${activeRoom}" su Toc-Toc per scambiarci i segnali! Clicca qui: https://lucaandrea18.github.io/toctoc/`;
+            
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Toc-Toc',
+                    text: shareText,
+                    url: 'https://lucaandrea18.github.io/toctoc/'
+                }).catch(() => {});
+            } else {
+                window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(shareText)}`, '_blank');
+            }
         }
 
         renderRooms();
         updateRoomListener();
+        updateStatsDisplay();
     </script>
 </body>
 </html>
