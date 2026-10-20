@@ -281,6 +281,30 @@
             margin: 4px 0;
         }
 
+        .sender-alert {
+            position: absolute;
+            top: -20px;
+            background: var(--accent-color);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 16px;
+            font-size: 13px;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.6);
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            pointer-events: none;
+            z-index: 10;
+            text-align: center;
+            line-height: 1.3;
+        }
+
+        .sender-alert.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
         .tap-button {
             width: 140px;
             height: 140px;
@@ -302,51 +326,6 @@
 
         .tap-button:active {
             transform: scale(0.92);
-        }
-
-        .tap-button.explode {
-            animation: btnExplode 0.8s ease-out;
-        }
-
-        @keyframes btnExplode {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.35) rotate(5deg); box-shadow: 0 0 50px #2ed573; }
-            100% { transform: scale(1); }
-        }
-
-        .special-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.9);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 999;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.4s ease;
-        }
-
-        .special-overlay.show {
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-        .special-icon-anim {
-            font-size: 90px;
-        }
-
-        .special-text {
-            color: #fff;
-            font-size: 22px;
-            font-weight: 900;
-            margin-top: 15px;
-            text-align: center;
-            letter-spacing: 1px;
         }
 
         .footer {
@@ -388,7 +367,7 @@
         <div class="rooms-grid" id="roomsList"></div>
 
         <div class="stats-container">
-            <div class="stats-header-title" id="statsTitle">STATISTICHE STANZA: GENERALE</div>
+            <div class="stats-header-title" id="statsTitle">STANZA: GENERALE</div>
             <div class="stats-grid">
                 <div class="stat-box">Oggi<br><strong id="statDay">0</strong></div>
                 <div class="stat-box">Sett.<br><strong id="statWeek">0</strong></div>
@@ -431,14 +410,10 @@
     </header>
 
     <div class="tap-container">
+        <div id="senderAlert" class="sender-alert">TOC-TOC!</div>
         <button class="tap-button" id="mainTapBtn">
             <span>TOC-TOC</span>
         </button>
-    </div>
-
-    <div id="specialOverlay" class="special-overlay">
-        <div id="specialIcon" class="special-icon-anim">🆗</div>
-        <div id="specialMessage" class="special-text">TRAGUARDO RAGGIUNTO!</div>
     </div>
 
     <div class="footer">
@@ -446,11 +421,13 @@
     </div>
 
     <script>
+        const DB_URL = "https://toctoc-302c3-default-rtdb.firebaseio.com/";
+
         let currentSound = 'porta';
         let currentMsg = '';
         let soundEnabled = true;
         let audioCtx = null;
-        let andreaSongIndex = 0;
+        let lastTimestamp = 0;
 
         let savedRooms = JSON.parse(localStorage.getItem('toctoc_rooms_list')) || ['generale', 'moglie', 'sorella', 'andrea'];
         let activeRoom = localStorage.getItem('toctoc_room') || 'generale';
@@ -501,50 +478,6 @@
                 setTimeout(() => playTone(600, 0.08, 'sine'), 80);
                 setTimeout(() => playTone(880, 0.15, 'sine'), 160);
             }
-        }
-
-        function playAndreaSpecialShow() {
-            if (!soundEnabled) return;
-            initAudioContext();
-            const shows = [
-                { title: "MJ: SMOOTH CRIMINAL", icon: "🕺", notes: [185, 277, 329, 369, 329, 277, 246, 277], tempo: 150, type: "sawtooth" },
-                { title: "MJ: BILLIE JEAN", icon: "🎩", notes: [220, 261, 329, 261, 220, 196, 220, 261], tempo: 150, type: "triangle" },
-                { title: "ARCADE RETRO GAME", icon: "👾", notes: [523, 659, 783, 1046, 880, 659, 783], tempo: 120, type: "square" },
-                { title: "HERO POWER RIFF", icon: "⚡", notes: [329, 392, 493, 523, 659, 783, 987], tempo: 130, type: "sawtooth" }
-            ];
-            let show = shows[andreaSongIndex % shows.length];
-            andreaSongIndex++;
-            showSpecialOverlay(show.icon, `ANDREA SPECIAL!\n${show.title}`);
-            show.notes.forEach((freq, idx) => {
-                setTimeout(() => playTone(freq, 0.12, show.type), idx * show.tempo);
-            });
-            setTimeout(() => hideSpecialOverlay(), 4000);
-        }
-
-        function playApplaudShow(count) {
-            if (!soundEnabled) return;
-            showSpecialOverlay('🆗👏', `TRAGUARDO!\n${count} TOCCHI!`);
-            const notes = [261, 329, 392, 523, 659, 783];
-            notes.forEach((freq, idx) => {
-                setTimeout(() => playTone(freq, 0.2, 'triangle'), idx * 120);
-            });
-            setTimeout(() => hideSpecialOverlay(), 3000);
-        }
-
-        function showSpecialOverlay(icon, text) {
-            document.getElementById('specialIcon').innerText = icon;
-            document.getElementById('specialMessage').innerText = text;
-            document.getElementById('specialOverlay').classList.add('show');
-        }
-
-        function hideSpecialOverlay() {
-            document.getElementById('specialOverlay').classList.remove('show');
-        }
-
-        function triggerButtonExplosion() {
-            const btn = document.getElementById('mainTapBtn');
-            btn.classList.add('explode');
-            setTimeout(() => btn.classList.remove('explode'), 800);
         }
 
         function getRoomStats() {
@@ -665,10 +598,55 @@
             });
         }
 
+        // Invia il segnale al Cloud Realtime via HTTP nativo
+        function sendSignalToCloud(sender, sound, msg) {
+            const payload = {
+                sender: sender,
+                sound: sound,
+                msg: msg,
+                timestamp: Date.now()
+            };
+            fetch(`${DB_URL}rooms/${activeRoom}.json`, {
+                method: 'PUT',
+                body: JSON.stringify(payload)
+            }).catch(() => {});
+        }
+
+        // Ascolta continuamente i segnali degli altri dal Cloud
+        function checkIncomingCloudSignals() {
+            fetch(`${DB_URL}rooms/${activeRoom}.json`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data && data.timestamp && data.timestamp > lastTimestamp) {
+                        let myName = document.getElementById('usernameInput').value.trim() || 'Luca';
+                        
+                        // Se il segnale è stato inviato da qualcun altro negli ultimi 10 secondi
+                        if (data.sender !== myName && data.timestamp > Date.now() - 10000) {
+                            playSound(data.sound || 'porta');
+                            addHistoryItem(data.sender, data.sound, data.msg);
+                            
+                            let alertBox = document.getElementById('senderAlert');
+                            let icon = data.sound === 'cuore' ? '💓' : (data.sound === 'magia' ? '✨' : '🚪');
+                            let msgText = data.msg ? `\n"${data.msg}"` : '';
+
+                            alertBox.innerText = `TOC-TOC da ${data.sender}! ${icon}${msgText}`;
+                            alertBox.classList.add('show');
+                            
+                            setTimeout(() => alertBox.classList.remove('show'), 3500);
+                        }
+                        lastTimestamp = data.timestamp;
+                    }
+                })
+                .catch(() => {});
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             renderRooms();
             updateStatsDisplay();
             renderHistory();
+
+            // Controllo del cloud ogni 2 secondi per la ricezione live a distanza
+            setInterval(checkIncomingCloudSignals, 2000);
 
             document.getElementById('addRoomBtn').addEventListener('click', () => {
                 let input = document.getElementById('newRoomInput');
@@ -735,6 +713,9 @@
                 let senderName = document.getElementById('usernameInput').value.trim() || 'Luca';
                 addHistoryItem(senderName, currentSound, currentMsg);
 
+                // Invio in tempo reale al Cloud per l'altro telefono
+                sendSignalToCloud(senderName, currentSound, currentMsg);
+
                 let allStats = getRoomStats();
                 let stats = allStats[activeRoom];
 
@@ -758,15 +739,6 @@
 
                 localStorage.setItem('toctoc_room_stats', JSON.stringify(allStats));
                 updateStatsDisplay();
-
-                if (stats.total % 50 === 0) {
-                    triggerButtonExplosion();
-                    if (activeRoom === 'andrea' || activeRoom === 'figlio') {
-                        playAndreaSpecialShow();
-                    } else {
-                        playApplaudShow(stats.total);
-                    }
-                }
             });
         });
     </script>
