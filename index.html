@@ -56,8 +56,10 @@
             font-weight: 800;
         }
 
-        .user-box {
+        .user-box, .add-room-box {
             width: 100%;
+            display: flex;
+            gap: 6px;
         }
 
         .main-input {
@@ -71,12 +73,6 @@
             font-weight: bold;
             text-align: center;
             outline: none;
-        }
-
-        .add-room-box {
-            display: flex;
-            gap: 6px;
-            width: 100%;
         }
 
         .add-btn {
@@ -220,7 +216,6 @@
             font-weight: bold;
             cursor: pointer;
             text-align: center;
-            text-decoration: none;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -257,14 +252,14 @@
             border-radius: 10px;
             padding: 6px;
             font-size: 10px;
-            max-height: 60px;
+            max-height: 55px;
             overflow-y: auto;
         }
 
         .history-title {
             font-weight: bold;
             color: #aaa;
-            margin-bottom: 3px;
+            margin-bottom: 2px;
             text-transform: uppercase;
         }
 
@@ -286,33 +281,9 @@
             margin: 4px 0;
         }
 
-        .sender-alert {
-            position: absolute;
-            top: -15px;
-            background: var(--accent-color);
-            color: white;
-            padding: 8px 15px;
-            border-radius: 16px;
-            font-size: 14px;
-            font-weight: bold;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.6);
-            opacity: 0;
-            transform: translateY(-10px);
-            transition: all 0.3s ease;
-            pointer-events: none;
-            z-index: 10;
-            text-align: center;
-            line-height: 1.3;
-        }
-
-        .sender-alert.show {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
         .tap-button {
-            width: 145px;
-            height: 145px;
+            width: 140px;
+            height: 140px;
             border-radius: 50%;
             background: linear-gradient(135deg, var(--accent-color), #ff6b81);
             border: none;
@@ -324,7 +295,6 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: transform 0.1s;
             outline: none;
             z-index: 2;
             touch-action: manipulation;
@@ -339,29 +309,9 @@
         }
 
         @keyframes btnExplode {
-            0% { transform: scale(1); box-shadow: 0 0 20px var(--accent-color); }
-            50% { transform: scale(1.35) rotate(5deg); box-shadow: 0 0 60px #2ed573, 0 0 90px var(--accent-color); }
-            100% { transform: scale(1) rotate(0deg); box-shadow: 0 8px 25px var(--accent-glow); }
-        }
-
-        .emoji-container {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            overflow: hidden;
-            z-index: 1;
-        }
-
-        .floating-emoji {
-            position: absolute;
-            font-size: 30px;
-            animation: floatUp 2s ease-out forwards;
-        }
-
-        @keyframes floatUp {
-            0% { transform: translateY(0) scale(0.5); opacity: 1; }
-            100% { transform: translateY(-150px) scale(1.4); opacity: 0; }
+            0% { transform: scale(1); }
+            50% { transform: scale(1.35) rotate(5deg); box-shadow: 0 0 50px #2ed573; }
+            100% { transform: scale(1); }
         }
 
         .special-overlay {
@@ -370,7 +320,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.88);
+            background: rgba(0, 0, 0, 0.9);
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -378,7 +328,7 @@
             z-index: 999;
             opacity: 0;
             pointer-events: none;
-            transition: opacity 0.5s ease;
+            transition: opacity 0.4s ease;
         }
 
         .special-overlay.show {
@@ -387,24 +337,16 @@
         }
 
         .special-icon-anim {
-            font-size: 100px;
-            animation: bounceAnim 1s infinite alternate ease-in-out;
-            filter: drop-shadow(0 0 20px #2ed573);
-        }
-
-        @keyframes bounceAnim {
-            0% { transform: scale(1); }
-            100% { transform: scale(1.2); }
+            font-size: 90px;
         }
 
         .special-text {
             color: #fff;
-            font-size: 24px;
+            font-size: 22px;
             font-weight: 900;
             margin-top: 15px;
             text-align: center;
-            text-shadow: 0 0 10px rgba(255,255,255,0.6);
-            letter-spacing: 2px;
+            letter-spacing: 1px;
         }
 
         .footer {
@@ -412,20 +354,18 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 4px;
         }
 
         .ad-banner {
             width: 100%;
             max-width: 320px;
-            height: 38px;
+            height: 35px;
             background: rgba(255, 255, 255, 0.05);
             border: 1px dashed rgba(255, 255, 255, 0.3);
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 11px;
-            font-weight: bold;
             color: #aaa;
             border-radius: 8px;
         }
@@ -469,16 +409,16 @@
             <button class="sound-btn" data-sound="magia">✨ Magia</button>
         </div>
 
-        <div class="quick-msg-row" id="quickMsgContainer">
+        <div class="quick-msg-row">
             <button class="quick-msg-btn" data-msg="👋 Toc Toc!">👋 Toc Toc!</button>
             <button class="quick-msg-btn" data-msg="🚗 Sto arrivando">🚗 Sto arrivando</button>
             <button class="quick-msg-btn" data-msg="🍝 Cena pronta!">🍝 Cena pronta!</button>
             <button class="quick-msg-btn" data-msg="❤️ Ti voglio bene">❤️ Ti voglio bene</button>
-            <button class="quick-msg-btn" data-msg="📞 Chiama quando puoi">📞 Chiama</button>
+            <button class="quick-msg-btn" data-msg="📞 Chiama">📞 Chiama</button>
         </div>
 
         <div class="history-box">
-            <div class="history-title">📜 Ultimi Toc-Toc Inviati</div>
+            <div class="history-title">📜 Storico Segnali</div>
             <div id="historyList"><i>Nessun segnale ancora...</i></div>
         </div>
 
@@ -491,8 +431,6 @@
     </header>
 
     <div class="tap-container">
-        <div id="senderAlert" class="sender-alert">TOC-TOC!</div>
-        <div class="emoji-container" id="emojiBox"></div>
         <button class="tap-button" id="mainTapBtn">
             <span>TOC-TOC</span>
         </button>
@@ -568,94 +506,35 @@
         function playAndreaSpecialShow() {
             if (!soundEnabled) return;
             initAudioContext();
-
             const shows = [
-                {
-                    title: "MJ: SMOOTH CRIMINAL",
-                    icon: "🕺",
-                    notes: [185.00, 277.18, 329.63, 369.99, 329.63, 277.18, 246.94, 277.18],
-                    tempo: 160,
-                    type: "sawtooth"
-                },
-                {
-                    title: "MJ: BILLIE JEAN",
-                    icon: "🎩",
-                    notes: [220.00, 261.63, 329.63, 261.63, 220.00, 196.00, 220.00, 261.63],
-                    tempo: 170,
-                    type: "triangle"
-                },
-                {
-                    title: "ARCADE RETRO GAME",
-                    icon: "👾",
-                    notes: [523.25, 659.25, 783.99, 1046.50, 880.00, 659.25, 783.99],
-                    tempo: 130,
-                    type: "square"
-                },
-                {
-                    title: "HERO POWER RIFF",
-                    icon: "⚡",
-                    notes: [329.63, 392.00, 493.88, 523.25, 659.25, 783.99, 987.77],
-                    tempo: 140,
-                    type: "sawtooth"
-                }
+                { title: "MJ: SMOOTH CRIMINAL", icon: "🕺", notes: [185, 277, 329, 369, 329, 277, 246, 277], tempo: 150, type: "sawtooth" },
+                { title: "MJ: BILLIE JEAN", icon: "🎩", notes: [220, 261, 329, 261, 220, 196, 220, 261], tempo: 150, type: "triangle" },
+                { title: "ARCADE RETRO GAME", icon: "👾", notes: [523, 659, 783, 1046, 880, 659, 783], tempo: 120, type: "square" },
+                { title: "HERO POWER RIFF", icon: "⚡", notes: [329, 392, 493, 523, 659, 783, 987], tempo: 130, type: "sawtooth" }
             ];
-
             let show = shows[andreaSongIndex % shows.length];
             andreaSongIndex++;
-
-            showSpecialOverlay(show.icon, `SPECIALE ANDREA!\n${show.title}`);
-
-            for (let l = 0; l < 3; l++) {
-                show.notes.forEach((freq, index) => {
-                    setTimeout(() => playTone(freq, 0.12, show.type), (l * show.notes.length * show.tempo) + (index * show.tempo));
-                });
-            }
-
-            setTimeout(() => hideSpecialOverlay(), 6000);
-        }
-
-        function playApplaudShow(count) {
-            if (!soundEnabled) return;
-            showSpecialOverlay('🆗👏', `GRANDE TRAGUARDO!\n${count} TOCCHI!`);
-            const notes = [261.63, 329.63, 392.00, 523.25, 659.25, 783.99];
-            notes.forEach((freq, idx) => {
-                setTimeout(() => playTone(freq, 0.2, 'triangle'), idx * 120);
+            showSpecialOverlay(show.icon, `ANDREA SPECIAL!\n${show.title}`);
+            show.notes.forEach((freq, idx) => {
+                setTimeout(() => playTone(freq, 0.12, show.type), idx * show.tempo);
             });
             setTimeout(() => hideSpecialOverlay(), 4000);
         }
 
-        function playWifeThanksShow() {
+        function playApplaudShow(count) {
             if (!soundEnabled) return;
-            showSpecialOverlay('💖', 'SPECIALE MOGLIE!\nGRAZIEEEEE!');
-            if ('speechSynthesis' in window) {
-                let utterance = new SpeechSynthesisUtterance('Grazieeeee mille amore mio!');
-                utterance.lang = 'it-IT';
-                utterance.rate = 0.9;
-                utterance.pitch = 1.3;
-                window.speechSynthesis.speak(utterance);
-            }
-            setTimeout(() => hideSpecialOverlay(), 5000);
-        }
-
-        function playKPopShow() {
-            if (!soundEnabled) return;
-            initAudioContext();
-            showSpecialOverlay('🌟', 'SPECIALE SORELLA!\nK-POP VIBES');
-            const kpopNotes = [523.25, 659.25, 783.99, 1046.50, 783.99, 659.25, 523.25, 587.33, 659.25, 523.25];
-            const tempo = 150;
-            for (let l = 0; l < 3; l++) {
-                kpopNotes.forEach((freq, index) => {
-                    setTimeout(() => playTone(freq, 0.1, 'sine'), (l * kpopNotes.length * tempo) + (index * tempo));
-                });
-            }
-            setTimeout(() => hideSpecialOverlay(), 6000);
+            showSpecialOverlay('🆗👏', `TRAGUARDO!\n${count} TOCCHI!`);
+            const notes = [261, 329, 392, 523, 659, 783];
+            notes.forEach((freq, idx) => {
+                setTimeout(() => playTone(freq, 0.2, 'triangle'), idx * 120);
+            });
+            setTimeout(() => hideSpecialOverlay(), 3000);
         }
 
         function showSpecialOverlay(icon, text) {
             document.getElementById('specialIcon').innerText = icon;
             document.getElementById('specialMessage').innerText = text;
             document.getElementById('specialOverlay').classList.add('show');
-            triggerRainbowEffect();
         }
 
         function hideSpecialOverlay() {
@@ -668,43 +547,10 @@
             setTimeout(() => btn.classList.remove('explode'), 800);
         }
 
-        function spawnConfetti() {
-            const box = document.getElementById('emojiBox');
-            const confettiList = ['🎉', '🎊', '✨', '🌟', '🌈', '🥳', '🎈', '🎆', '👏', '🆗'];
-            for (let i = 0; i < 40; i++) {
-                let span = document.createElement('span');
-                span.className = 'floating-emoji';
-                span.innerText = confettiList[Math.floor(Math.random() * confettiList.length)];
-                span.style.left = Math.random() * 90 + 5 + '%';
-                span.style.bottom = '10px';
-                span.style.fontSize = (28 + Math.random() * 20) + 'px';
-                span.style.animationDuration = (1.2 + Math.random() * 1.5) + 's';
-                box.appendChild(span);
-                setTimeout(() => span.remove(), 2500);
-            }
-        }
-
-        function triggerRainbowEffect() {
-            const colors = ['#ff4757', '#2ed573', '#1e90ff', '#ffa502', '#9b59b6', '#ff6b81'];
-            let i = 0;
-            let interval = setInterval(() => {
-                document.body.style.backgroundColor = colors[i % colors.length];
-                i++;
-                if (i > 10) {
-                    clearInterval(interval);
-                    document.body.style.backgroundColor = '#08080a';
-                }
-            }, 300);
-        }
-
         function getRoomStats() {
             let allStats = JSON.parse(localStorage.getItem('toctoc_room_stats')) || {};
             if (!allStats[activeRoom]) {
-                allStats[activeRoom] = {
-                    day: 0, week: 0, month: 0, year: 0, total: 0,
-                    porta: 0, cuore: 0, magia: 0,
-                    lastDay: new Date().getDate()
-                };
+                allStats[activeRoom] = { day: 0, week: 0, month: 0, year: 0, total: 0, porta: 0, cuore: 0, magia: 0, lastDay: new Date().getDate() };
             }
             return allStats;
         }
@@ -713,15 +559,11 @@
             return parseInt(localStorage.getItem('toctoc_global_total')) || 0;
         }
 
-        function setGlobalTotal(val) {
-            localStorage.setItem('toctoc_global_total', val);
-        }
-
         function updateStatsDisplay() {
             let allStats = getRoomStats();
             let stats = allStats[activeRoom];
 
-            document.getElementById('statsTitle').innerText = `STATISTICHE STANZA: ${activeRoom.toUpperCase()}`;
+            document.getElementById('statsTitle').innerText = `STANZA: ${activeRoom.toUpperCase()}`;
             document.getElementById('statDay').innerText = stats.day;
             document.getElementById('statWeek').innerText = stats.week;
             document.getElementById('statMonth').innerText = stats.month;
@@ -794,7 +636,6 @@
             let history = JSON.parse(localStorage.getItem(historyKey)) || [];
             let now = new Date();
             let timeStr = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
-
             let icon = sound === 'cuore' ? '💓' : (sound === 'magia' ? '✨' : '🚪');
             let fullText = msg ? `${icon} "${msg}"` : `${icon} Toc-Toc!`;
 
@@ -868,22 +709,16 @@
             });
 
             document.getElementById('whatsappBtn').addEventListener('click', () => {
-                const shareText = `Entra nella stanza "${activeRoom}" su Toc-Toc per scambiarci i segnali! Clicca qui: https://lucaandrea18.github.io/toctoc/`;
-                if (navigator.share) {
-                    navigator.share({ title: 'Toc-Toc', text: shareText }).catch(() => {
-                        window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(shareText)}`, '_blank');
-                    });
-                } else {
-                    window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(shareText)}`, '_blank');
-                }
+                const shareText = `Entra nella stanza "${activeRoom}" su Toc-Toc! Clicca qui: https://lucaandrea18.github.io/toctoc/`;
+                window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(shareText)}`, '_blank');
             });
 
             document.getElementById('premiumBtn').addEventListener('click', () => {
-                alert("Versione Premium Toc-Toc: Funzioni sbloccate e zero pubblicità!");
+                alert("Versione Premium: Funzioni sbloccate e zero pubblicità!");
             });
 
             document.getElementById('resetBtn').addEventListener('click', () => {
-                if(confirm(`Vuoi azzerare le statistiche della stanza "${activeRoom}"?`)) {
+                if(confirm(`Azzerare le statistiche di "${activeRoom}"?`)) {
                     let allStats = getRoomStats();
                     allStats[activeRoom] = { day: 0, week: 0, month: 0, year: 0, total: 0, porta: 0, cuore: 0, magia: 0, lastDay: new Date().getDate() };
                     localStorage.setItem('toctoc_room_stats', JSON.stringify(allStats));
@@ -915,7 +750,7 @@
                 stats.year++;
                 stats.total++;
 
-                setGlobalTotal(getGlobalTotal() + 1);
+                localStorage.setItem('toctoc_global_total', getGlobalTotal() + 1);
 
                 if (currentSound === 'porta') stats.porta = (stats.porta || 0) + 1;
                 if (currentSound === 'cuore') stats.cuore = (stats.cuore || 0) + 1;
@@ -924,17 +759,10 @@
                 localStorage.setItem('toctoc_room_stats', JSON.stringify(allStats));
                 updateStatsDisplay();
 
-                if (stats.total % 100 === 0) {
+                if (stats.total % 50 === 0) {
                     triggerButtonExplosion();
-                    spawnConfetti();
-                    triggerRainbowEffect();
-
                     if (activeRoom === 'andrea' || activeRoom === 'figlio') {
                         playAndreaSpecialShow();
-                    } else if (activeRoom === 'moglie') {
-                        playWifeThanksShow();
-                    } else if (activeRoom === 'sorella') {
-                        playKPopShow();
                     } else {
                         playApplaudShow(stats.total);
                     }
