@@ -4,10 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Toc-Toc</title>
-    <link rel="manifest" href="./manifest.json">
-    
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
     
     <style>
         :root {
@@ -446,19 +442,8 @@
     </div>
 
     <script>
-        const firebaseConfig = {
-            databaseURL: "https://toctoc-302c3-default-rtdb.firebaseio.com/"
-        };
-        
-        let db = null;
-        try {
-            firebase.initializeApp(firebaseConfig);
-            db = firebase.database();
-        } catch(e) { console.log(e); }
-
         let currentSound = 'porta';
         let soundEnabled = true;
-        let currentRoomRef = null;
         let audioCtx = null;
 
         let savedRooms = JSON.parse(localStorage.getItem('toctoc_rooms_list')) || ['generale', 'moglie', 'sorella', 'andrea'];
@@ -482,6 +467,7 @@
 
         function playTone(freq, duration, type) {
             try {
+                initAudioContext();
                 if (!audioCtx) return;
                 let osc = audioCtx.createOscillator();
                 let gain = audioCtx.createGain();
@@ -498,8 +484,6 @@
 
         function playSound(type) {
             if (!soundEnabled) return;
-            initAudioContext();
-
             if (type === 'porta') {
                 playTone(220, 0.08, 'triangle');
                 setTimeout(() => playTone(260, 0.12, 'triangle'), 120);
@@ -515,7 +499,6 @@
 
         function playApplaudShow(count) {
             if (!soundEnabled) return;
-            initAudioContext();
             showSpecialOverlay('🆗👏', `GRANDE TRAGUARDO!\n${count} TOCCHI!`);
             const notes = [261.63, 329.63, 392.00, 523.25, 659.25, 783.99];
             notes.forEach((freq, idx) => {
@@ -526,7 +509,6 @@
 
         function playMichaelJacksonShow() {
             if (!soundEnabled) return;
-            initAudioContext();
             showSpecialOverlay('🕺', 'SPECIALE ANDREA: 200 TOCCHI!\nMICHAEL JACKSON');
             const baseNotes = [185.00, 277.18, 329.63, 369.99, 329.63, 277.18, 246.94, 277.18];
             const tempo = 180;
@@ -553,7 +535,6 @@
 
         function playKPopShow() {
             if (!soundEnabled) return;
-            initAudioContext();
             showSpecialOverlay('🌟', 'SPECIALE SORELLA: 200 TOCCHI!\nK-POP VIBES');
             const kpopNotes = [523.25, 659.25, 783.99, 1046.50, 783.99, 659.25, 523.25, 587.33, 659.25, 523.25];
             const tempo = 150;
@@ -681,42 +662,13 @@
             activeRoom = roomName;
             localStorage.setItem('toctoc_room', activeRoom);
             renderRooms();
-            updateRoomListener();
             updateStatsDisplay();
         }
 
-        function updateRoomListener() {
-            if (!db) return;
-            if (currentRoomRef) currentRoomRef.off();
-
-            currentRoomRef = db.ref('rooms/' + activeRoom);
-            currentRoomRef.on('value', (snapshot) => {
-                const data = snapshot.val();
-                let myName = document.getElementById('usernameInput').value.trim() || 'Luca';
-                
-                if (data && data.timestamp > Date.now() - 3000 && data.sender !== myName) {
-                    playSound(data.sound || 'porta');
-                    
-                    let alertBox = document.getElementById('senderAlert');
-                    let name = data.sender || 'Qualcuno';
-                    let icon = data.sound === 'cuore' ? '💓' : (data.sound === 'magia' ? '✨' : '🚪');
-                    let countText = data.count ? `\n(${data.sound.toUpperCase()} #${data.count})` : '';
-
-                    alertBox.innerText = `TOC-TOC da ${name}! ${icon}${countText}`;
-                    alertBox.classList.add('show');
-                    
-                    setTimeout(() => alertBox.classList.remove('show'), 2800);
-                }
-            });
-        }
-
-        // Assegnazione sicura di tutti gli eventi tramite JavaScript
         document.addEventListener('DOMContentLoaded', () => {
             renderRooms();
-            updateRoomListener();
             updateStatsDisplay();
 
-            // Tasto Aggiungi Stanza (+)
             document.getElementById('addRoomBtn').addEventListener('click', () => {
                 let input = document.getElementById('newRoomInput');
                 let roomName = input.value.trim().toLowerCase();
@@ -727,7 +679,6 @@
                 }
             });
 
-            // Selezione Suoni (Porta, Cuore, Magia)
             document.querySelectorAll('.sound-btn').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     currentSound = e.target.getAttribute('data-sound');
@@ -736,14 +687,12 @@
                 });
             });
 
-            // Toggle Audio ON/OFF
             document.getElementById('soundToggle').addEventListener('click', (e) => {
                 soundEnabled = !soundEnabled;
                 e.target.innerText = soundEnabled ? "🔊 Audio" : "🔇 Audio";
                 e.target.classList.toggle('active', soundEnabled);
             });
 
-            // Tasto WhatsApp
             document.getElementById('whatsappBtn').addEventListener('click', () => {
                 const shareText = `Entra nella stanza "${activeRoom}" su Toc-Toc per scambiarci i segnali! Clicca qui: https://lucaandrea18.github.io/toctoc/`;
                 if (navigator.share) {
@@ -755,12 +704,10 @@
                 }
             });
 
-            // Tasto Premium
             document.getElementById('premiumBtn').addEventListener('click', () => {
                 alert("Versione Premium Toc-Toc: Funzioni sbloccate e zero pubblicità!");
             });
 
-            // Tasto Azzera Statistiche
             document.getElementById('resetBtn').addEventListener('click', () => {
                 if(confirm(`Vuoi azzerare le statistiche della stanza "${activeRoom}"?`)) {
                     let allStats = getRoomStats();
@@ -770,11 +717,8 @@
                 }
             });
 
-            // Tasto Centrale TOC-TOC
             document.getElementById('mainTapBtn').addEventListener('click', () => {
                 initAudioContext();
-                let senderName = document.getElementById('usernameInput').value.trim() || 'Qualcuno';
-
                 playSound(currentSound);
 
                 let allStats = getRoomStats();
@@ -798,7 +742,6 @@
                 if (currentSound === 'cuore') stats.cuore = (stats.cuore || 0) + 1;
                 if (currentSound === 'magia') stats.magia = (stats.magia || 0) + 1;
 
-                let countForType = stats[currentSound];
                 localStorage.setItem('toctoc_room_stats', JSON.stringify(allStats));
                 updateStatsDisplay();
 
@@ -820,15 +763,6 @@
                     } else {
                         playApplaudShow(stats.total);
                     }
-                }
-
-                if (db) {
-                    db.ref('rooms/' + activeRoom).set({
-                        sound: currentSound,
-                        sender: senderName,
-                        count: countForType,
-                        timestamp: Date.now()
-                    });
                 }
             });
         });
