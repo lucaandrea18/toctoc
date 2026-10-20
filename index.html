@@ -31,7 +31,7 @@
 
         body {
             margin: 0;
-            padding: 10px 12px;
+            padding: 8px 10px;
             background-color: var(--bg-color);
             color: var(--text-color);
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -51,11 +51,11 @@
             width: 100%;
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 6px;
         }
 
         h1 {
-            font-size: 22px;
+            font-size: 20px;
             margin: 0;
             letter-spacing: 1.5px;
             font-weight: 800;
@@ -70,9 +70,9 @@
             background: rgba(255, 255, 255, 0.15);
             border: 2px solid rgba(255, 255, 255, 0.3);
             color: #fff;
-            padding: 9px;
+            padding: 8px;
             border-radius: 12px;
-            font-size: 15px;
+            font-size: 14px;
             font-weight: bold;
             text-align: center;
             outline: none;
@@ -89,9 +89,9 @@
             background: #2ed573;
             border: none;
             color: white;
-            padding: 0 16px;
+            padding: 0 14px;
             border-radius: 12px;
-            font-size: 20px;
+            font-size: 18px;
             font-weight: bold;
             cursor: pointer;
         }
@@ -99,9 +99,9 @@
         .rooms-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 5px;
+            gap: 4px;
             width: 100%;
-            max-height: 140px;
+            max-height: 120px;
             overflow-y: auto;
             padding: 2px 0;
         }
@@ -110,7 +110,7 @@
             background: rgba(255, 255, 255, 0.12);
             border: 1.5px solid rgba(255, 255, 255, 0.25);
             color: #ddd;
-            padding: 6px 2px;
+            padding: 5px 2px;
             border-radius: 10px;
             font-size: 11px;
             font-weight: bold;
@@ -142,14 +142,14 @@
             background: rgba(255, 255, 255, 0.08);
             border: 1px solid rgba(255, 255, 255, 0.15);
             border-radius: 12px;
-            padding: 6px;
+            padding: 5px;
             display: flex;
             flex-direction: column;
-            gap: 4px;
+            gap: 3px;
         }
 
         .stats-header-title {
-            font-size: 11px;
+            font-size: 10px;
             font-weight: bold;
             color: #ff4757;
             text-transform: uppercase;
@@ -170,15 +170,15 @@
 
         .stat-box strong {
             color: #fff;
-            font-size: 14px;
+            font-size: 13px;
         }
 
         .type-breakdown {
             display: flex;
             justify-content: space-around;
             border-top: 1px solid rgba(255, 255, 255, 0.1);
-            padding-top: 4px;
-            font-size: 12px;
+            padding-top: 3px;
+            font-size: 11px;
             font-weight: bold;
             color: #f1f2f6;
         }
@@ -186,25 +186,37 @@
         .controls-row {
             display: flex;
             justify-content: center;
-            gap: 5px;
+            gap: 4px;
             width: 100%;
         }
 
-        .sound-btn, .toggle-btn, .premium-btn, .reset-btn {
+        .sound-btn, .toggle-btn, .premium-btn, .reset-btn, .whatsapp-btn-side {
             flex: 1;
             background: rgba(255, 255, 255, 0.12);
             border: 1.5px solid rgba(255, 255, 255, 0.25);
             color: white;
-            padding: 8px 2px;
+            padding: 7px 2px;
             border-radius: 10px;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: bold;
             cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 3px;
         }
 
         .sound-btn.active, .toggle-btn.active {
             background: #ff4757;
             border-color: #ff4757;
+        }
+
+        .whatsapp-btn-side {
+            background: #25D366;
+            border-color: #25D366;
+            color: #fff;
         }
 
         .premium-btn {
@@ -226,7 +238,7 @@
             justify-content: center;
             position: relative;
             width: 100%;
-            margin: 6px 0;
+            margin: 4px 0;
         }
 
         .sender-alert {
@@ -234,9 +246,9 @@
             top: -15px;
             background: #ff4757;
             color: white;
-            padding: 10px 18px;
-            border-radius: 18px;
-            font-size: 15px;
+            padding: 8px 15px;
+            border-radius: 16px;
+            font-size: 14px;
             font-weight: bold;
             box-shadow: 0 4px 15px rgba(0,0,0,0.6);
             opacity: 0;
@@ -254,668 +266,6 @@
         }
 
         .tap-button {
-            width: 155px;
-            height: 155px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #ff4757, #ff6b81);
-            border: none;
-            box-shadow: 0 10px 30px rgba(255, 71, 87, 0.5);
-            color: white;
-            font-size: 22px;
-            font-weight: 800;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: transform 0.1s;
-            outline: none;
-            z-index: 2;
-            touch-action: manipulation;
-        }
-
-        .tap-button:active {
-            transform: scale(0.92);
-        }
-
-        /* Animazione esplosione tasto a 100 tocchi */
-        .tap-button.explode {
-            animation: btnExplode 0.8s ease-out;
-        }
-
-        @keyframes btnExplode {
-            0% { transform: scale(1); box-shadow: 0 0 20px #ff4757; }
-            50% { transform: scale(1.35) rotate(5deg); box-shadow: 0 0 60px #2ed573, 0 0 90px #ff4757; }
-            100% { transform: scale(1) rotate(0deg); box-shadow: 0 10px 30px rgba(255, 71, 87, 0.5); }
-        }
-
-        .emoji-container {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            overflow: hidden;
-            z-index: 1;
-        }
-
-        .floating-emoji {
-            position: absolute;
-            font-size: 32px;
-            animation: floatUp 2s ease-out forwards;
-        }
-
-        @keyframes floatUp {
-            0% { transform: translateY(0) scale(0.5); opacity: 1; }
-            100% { transform: translateY(-170px) scale(1.4); opacity: 0; }
-        }
-
-        .special-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.88);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 999;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.5s ease;
-        }
-
-        .special-overlay.show {
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-        .special-icon-anim {
-            font-size: 110px;
-            animation: bounceAnim 1s infinite alternate ease-in-out;
-            filter: drop-shadow(0 0 20px #2ed573);
-        }
-
-        @keyframes bounceAnim {
-            0% { transform: scale(1); }
-            100% { transform: scale(1.2); }
-        }
-
-        .special-text {
-            color: #fff;
-            font-size: 26px;
-            font-weight: 900;
-            margin-top: 15px;
-            text-align: center;
-            text-shadow: 0 0 10px rgba(255,255,255,0.6);
-            letter-spacing: 2px;
-        }
-
-        .footer {
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .whatsapp-btn {
-            background: #25D366;
-            color: white;
-            border: none;
-            padding: 9px 18px;
-            border-radius: 18px;
-            font-size: 13px;
-            font-weight: bold;
-            cursor: pointer;
-            text-decoration: none;
-            box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
-        }
-
-        .ad-banner {
-            width: 100%;
-            max-width: 320px;
-            height: 45px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px dashed rgba(255, 255, 255, 0.3);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 11px;
-            font-weight: bold;
-            color: #aaa;
-            border-radius: 8px;
-        }
-    </style>
-</head>
-<body>
-
-    <header>
-        <h1>TOC-TOC 💗</h1>
-        
-        <div class="user-box">
-            <input type="text" id="usernameInput" class="main-input" placeholder="Il tuo Nome" oninput="saveConfig()">
-        </div>
-
-        <div class="add-room-box">
-            <input type="text" id="newRoomInput" class="main-input" placeholder="Crea Stanza (es. Andrea)">
-            <button class="add-btn" onclick="addNewRoom()">+</button>
-        </div>
-
-        <div class="rooms-grid" id="roomsList"></div>
-
-        <div class="stats-container">
-            <div class="stats-header-title" id="statsTitle">STATISTICHE STANZA: GENERALE</div>
-            <div class="stats-grid">
-                <div class="stat-box">Oggi<br><strong id="statDay">0</strong></div>
-                <div class="stat-box">Sett.<br><strong id="statWeek">0</strong></div>
-                <div class="stat-box">Mese<br><strong id="statMonth">0</strong></div>
-                <div class="stat-box">Anno<br><strong id="statYear">0</strong></div>
-            </div>
-            <div class="type-breakdown">
-                <span>🚪 Porta: <span id="countPorta">0</span></span>
-                <span>💓 Cuore: <span id="countCuore">0</span></span>
-                <span>✨ Magia: <span id="countMagia">0</span></span>
-                <span>🌐 Totale App: <span id="countGlobalTotal">0</span></span>
-            </div>
-        </div>
-
-        <div class="controls-row">
-            <button class="sound-btn active" onclick="setSound(event, 'porta')">🚪 Porta</button>
-            <button class="sound-btn" onclick="setSound(event, 'cuore')">💓 Cuore</button>
-            <button class="sound-btn" onclick="setSound(event, 'magia')">✨ Magia</button>
-        </div>
-
-        <div class="controls-row">
-            <button id="soundToggle" class="toggle-btn active" onclick="toggleSoundState()">🔊 Audio: ON</button>
-            <button class="premium-btn" onclick="openPremium()">⭐ Premium</button>
-            <button class="reset-btn" onclick="resetStats()">🗑️ Azzera</button>
-        </div>
-    </header>
-
-    <div class="tap-container">
-        <div id="senderAlert" class="sender-alert">TOC-TOC!</div>
-        <div class="emoji-container" id="emojiBox"></div>
-        <button class="tap-button" id="mainTapBtn" onclick="sendTap()" oncontextmenu="return false;">
-            <span>TOC-TOC</span>
-        </button>
-    </div>
-
-    <div id="specialOverlay" class="special-overlay">
-        <div id="specialIcon" class="special-icon-anim">🆗</div>
-        <div id="specialMessage" class="special-text">TRAGUARDO RAGGIUNTO!</div>
-    </div>
-
-    <div class="footer">
-        <div class="ad-banner">📢 Spazio Banner Pubblicitario</div>
-        <button id="whatsappShare" class="whatsapp-btn" onclick="shareOnWhatsApp()">Invita su WhatsApp</button>
-    </div>
-
-    <script>
-        const firebaseConfig = {
-            databaseURL: "https://toctoc-302c3-default-rtdb.firebaseio.com/"
-        };
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
-
-        let currentSound = 'porta';
-        let soundEnabled = true;
-        let currentRoomRef = null;
-
-        let savedRooms = JSON.parse(localStorage.getItem('toctoc_rooms_list')) || ['generale', 'moglie', 'sorella', 'andrea'];
-        let activeRoom = localStorage.getItem('toctoc_room') || 'generale';
-        let storedName = localStorage.getItem('toctoc_username') || '';
-
-        document.getElementById('usernameInput').value = storedName;
-
-        if ("Notification" in window && Notification.permission !== "granted") {
-            Notification.requestPermission();
-        }
-
-        function saveConfig() {
-            let nameVal = document.getElementById('usernameInput').value.trim();
-            localStorage.setItem('toctoc_username', nameVal);
-        }
-
-        function renderRooms() {
-            const list = document.getElementById('roomsList');
-            list.innerHTML = '';
-            
-            savedRooms.forEach(room => {
-                const chip = document.createElement('div');
-                chip.className = `room-chip ${room === activeRoom ? 'active' : ''}`;
-                chip.onclick = () => selectRoom(room);
-
-                chip.innerHTML = `
-                    <span>🏠 ${room}</span>
-                    ${room !== 'generale' ? `<span class="delete-room" onclick="deleteRoom(event, '${room}')">✕</span>` : ''}
-                `;
-                list.appendChild(chip);
-            });
-            localStorage.setItem('toctoc_rooms_list', JSON.stringify(savedRooms));
-        }
-
-        function addNewRoom() {
-            let input = document.getElementById('newRoomInput');
-            let roomName = input.value.trim().toLowerCase();
-            if (roomName && !savedRooms.includes(roomName)) {
-                savedRooms.push(roomName);
-                input.value = '';
-                selectRoom(roomName);
-            }
-        }
-
-        function deleteRoom(e, roomName) {
-            e.stopPropagation();
-            savedRooms = savedRooms.filter(r => r !== roomName);
-            if (activeRoom === roomName) {
-                selectRoom('generale');
-            } else {
-                renderRooms();
-            }
-        }
-
-        function selectRoom(roomName) {
-            activeRoom = roomName;
-            localStorage.setItem('toctoc_room', activeRoom);
-            renderRooms();
-            updateRoomListener();
-            updateStatsDisplay();
-        }
-
-        /* Gestione sia delle Statistiche di Stanza che Generali */
-        function getRoomStats() {
-            let allStats = JSON.parse(localStorage.getItem('toctoc_room_stats')) || {};
-            if (!allStats[activeRoom]) {
-                allStats[activeRoom] = {
-                    day: 0, week: 0, month: 0, year: 0, total: 0,
-                    porta: 0, cuore: 0, magia: 0,
-                    lastDay: new Date().getDate()
-                };
-            }
-            return allStats;
-        }
-
-        function getGlobalTotal() {
-            return parseInt(localStorage.getItem('toctoc_global_total')) || 0;
-        }
-
-        function setGlobalTotal(val) {
-            localStorage.setItem('toctoc_global_total', val);
-        }
-
-        function saveRoomStats(allStats) {
-            localStorage.setItem('toctoc_room_stats', JSON.stringify(allStats));
-        }
-
-        function checkDateReset(roomStats) {
-            let today = new Date().getDate();
-            if (roomStats.lastDay !== today) {
-                roomStats.day = 0;
-                roomStats.lastDay = today;
-            }
-        }
-
-        function resetStats() {
-            if(confirm(`Vuoi azzerare le statistiche della stanza "${activeRoom}"?`)) {
-                let allStats = getRoomStats();
-                allStats[activeRoom] = { day: 0, week: 0, month: 0, year: 0, total: 0, porta: 0, cuore: 0, magia: 0, lastDay: new Date().getDate() };
-                saveRoomStats(allStats);
-                updateStatsDisplay();
-            }
-        }
-
-        function setSound(e, type) {
-            currentSound = type;
-            document.querySelectorAll('.sound-btn').forEach(b => b.classList.remove('active'));
-            if (e && e.target) {
-                e.target.classList.add('active');
-            }
-        }
-
-        function toggleSoundState() {
-            soundEnabled = !soundEnabled;
-            let btn = document.getElementById('soundToggle');
-            btn.innerText = soundEnabled ? "🔊 Audio: ON" : "🔇 Audio: OFF";
-            btn.classList.toggle('active', soundEnabled);
-        }
-
-        function openPremium() {
-            alert("Versione Premium Toc-Toc: Funzioni sbloccate e zero pubblicità!");
-        }
-
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-
-        function playSound(type) {
-            if (!soundEnabled) return;
-            if (audioCtx.state === 'suspended') { audioCtx.resume(); }
-
-            if (type === 'porta') {
-                playTone(220, 0.08, 'triangle');
-                setTimeout(() => playTone(260, 0.12, 'triangle'), 120);
-            } else if (type === 'cuore') {
-                playTone(120, 0.1, 'sine');
-                setTimeout(() => playTone(100, 0.15, 'sine'), 180);
-            } else if (type === 'magia') {
-                playTone(400, 0.08, 'sine');
-                setTimeout(() => playTone(600, 0.08, 'sine'), 80);
-                setTimeout(() => playTone(880, 0.15, 'sine'), 160);
-            }
-        }
-
-        function playTone(freq, duration, type) {
-            try {
-                let osc = audioCtx.createOscillator();
-                let gain = audioCtx.createGain();
-                osc.type = type;
-                osc.frequency.value = freq;
-                gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
-                osc.connect(gain);
-                gain.connect(audioCtx.destination);
-                osc.start();
-                osc.stop(audioCtx.currentTime + duration);
-            } catch (e) {}
-        }
-
-        function playWowShow(count) {
-            if (!soundEnabled) return;
-            if (audioCtx.state === 'suspended') { audioCtx.resume(); }
-
-            showSpecialOverlay('✨🎉', `WOW! TRAGUARDO\n${count} TOCCHI!`);
-
-            const notes = [300, 450, 600, 900, 1200];
-            notes.forEach((freq, idx) => {
-                setTimeout(() => {
-                    playTone(freq, 0.15, 'sine');
-                }, idx * 90);
-            });
-
-            setTimeout(() => {
-                hideSpecialOverlay();
-            }, 3000);
-        }
-
-        function playApplaudShow(count) {
-            if (!soundEnabled) return;
-            if (audioCtx.state === 'suspended') { audioCtx.resume(); }
-
-            showSpecialOverlay('🆗👏', `GRANDE TRAGUARDO!\n${count} TOCCHI!`);
-
-            const notes = [261.63, 329.63, 392.00, 523.25, 659.25, 783.99];
-            notes.forEach((freq, idx) => {
-                setTimeout(() => {
-                    playTone(freq, 0.2, 'triangle');
-                }, idx * 120);
-            });
-
-            setTimeout(() => {
-                hideSpecialOverlay();
-            }, 4000);
-        }
-
-        function playMichaelJacksonShow() {
-            if (!soundEnabled) return;
-            if (audioCtx.state === 'suspended') { audioCtx.resume(); }
-
-            showSpecialOverlay('🕺', 'SPECIALE ANDREA: 200 TOCCHI!\nMICHAEL JACKSON');
-
-            const baseNotes = [185.00, 277.18, 329.63, 369.99, 329.63, 277.18, 246.94, 277.18];
-            const tempo = 180;
-            const loops = 4;
-
-            for (let l = 0; l < loops; l++) {
-                baseNotes.forEach((freq, index) => {
-                    setTimeout(() => {
-                        playTone(freq, 0.14, 'sawtooth');
-                    }, (l * baseNotes.length * tempo) + (index * tempo));
-                });
-            }
-
-            setTimeout(() => {
-                hideSpecialOverlay();
-            }, 7000);
-        }
-
-        function playWifeThanksShow() {
-            if (!soundEnabled) return;
-            
-            showSpecialOverlay('💖', 'SPECIALE MOGLIE: 200 TOCCHI!\nGRAZIEEEEE!');
-
-            if ('speechSynthesis' in window) {
-                let utterance = new SpeechSynthesisUtterance('Grazieeeee mille amore mio!');
-                utterance.lang = 'it-IT';
-                utterance.rate = 0.9;
-                utterance.pitch = 1.3;
-                window.speechSynthesis.speak(utterance);
-            }
-
-            setTimeout(() => {
-                hideSpecialOverlay();
-            }, 5000);
-        }
-
-        function playKPopShow() {
-            if (!soundEnabled) return;
-            if (audioCtx.state === 'suspended') { audioCtx.resume(); }
-
-            showSpecialOverlay('🌟', 'SPECIALE SORELLA: 200 TOCCHI!\nK-POP VIBES');
-
-            const kpopNotes = [523.25, 659.25, 783.99, 1046.50, 783.99, 659.25, 523.25, 587.33, 659.25, 523.25];
-            const tempo = 150;
-            const loops = 4;
-
-            for (let l = 0; l < loops; l++) {
-                kpopNotes.forEach((freq, index) => {
-                    setTimeout(() => {
-                        playTone(freq, 0.1, 'sine');
-                    }, (l * kpopNotes.length * tempo) + (index * tempo));
-                });
-            }
-
-            setTimeout(() => {
-                hideSpecialOverlay();
-            }, 7000);
-        }
-
-        function showSpecialOverlay(icon, text) {
-            const overlay = document.getElementById('specialOverlay');
-            document.getElementById('specialIcon').innerText = icon;
-            document.getElementById('specialMessage').innerText = text;
-            overlay.classList.add('show');
-            triggerRainbowEffect();
-        }
-
-        function hideSpecialOverlay() {
-            const overlay = document.getElementById('specialOverlay');
-            overlay.classList.remove('show');
-        }
-
-        function sendTap() {
-            let senderName = document.getElementById('usernameInput').value.trim() || 'Qualcuno';
-
-            playSound(currentSound);
-            incrementStats(currentSound);
-
-            let allStats = getRoomStats();
-            let countForType = allStats[activeRoom][currentSound] || 1;
-
-            db.ref('rooms/' + activeRoom).set({
-                sound: currentSound,
-                sender: senderName,
-                count: countForType,
-                timestamp: Date.now()
-            });
-        }
-
-        function incrementStats(soundType) {
-            let allStats = getRoomStats();
-            let stats = allStats[activeRoom];
-
-            checkDateReset(stats);
-
-            stats.day++;
-            stats.week++;
-            stats.month++;
-            stats.year++;
-            stats.total++;
-
-            // Incremento conteggio globale
-            let globalTotal = getGlobalTotal() + 1;
-            setGlobalTotal(globalTotal);
-
-            if (soundType === 'porta') stats.porta = (stats.porta || 0) + 1;
-            if (soundType === 'cuore') stats.cuore = (stats.cuore || 0) + 1;
-            if (soundType === 'magia') stats.magia = (stats.magia || 0) + 1;
-
-            saveRoomStats(allStats);
-            updateStatsDisplay();
-
-            // Esplosione del tasto e coriandoli ad OGNI 100 tocchi
-            if (stats.total % 100 === 0) {
-                triggerButtonExplosion();
-                spawnConfetti();
-                triggerRainbowEffect();
-
-                if (stats.total % 200 === 0) {
-                    if (activeRoom === 'andrea' || activeRoom === 'figlio') {
-                        playMichaelJacksonShow();
-                    } else if (activeRoom === 'moglie') {
-                        playWifeThanksShow();
-                    } else if (activeRoom === 'sorella') {
-                        playKPopShow();
-                    } else {
-                        playApplaudShow(stats.total);
-                    }
-                } else {
-                    playApplaudShow(stats.total);
-                }
-            } else {
-                playWowShow(stats.total);
-            }
-        }
-
-        /* Animazione esplosione tasto centrale */
-        function triggerButtonExplosion() {
-            const btn = document.getElementById('mainTapBtn');
-            btn.classList.add('explode');
-            setTimeout(() => {
-                btn.classList.remove('explode');
-            }, 800);
-        }
-
-        /* Pioggia / Esplosione di Coriandoli */
-        function spawnConfetti() {
-            const box = document.getElementById('emojiBox');
-            const confettiList = ['🎉', '🎊', '✨', '🌟', '🌈', '🥳', '🎈', '🎆', '👏', '🆗'];
-
-            for (let i = 0; i < 40; i++) {
-                let span = document.createElement('span');
-                span.className = 'floating-emoji';
-                span.innerText = confettiList[Math.floor(Math.random() * confettiList.length)];
-                span.style.left = Math.random() * 90 + 5 + '%';
-                span.style.bottom = '10px';
-                span.style.fontSize = (28 + Math.random() * 20) + 'px';
-                span.style.animationDuration = (1.2 + Math.random() * 1.5) + 's';
-                box.appendChild(span);
-                setTimeout(() => span.remove(), 2500);
-            }
-        }
-
-        function triggerRainbowEffect() {
-            const colors = ['#ff4757', '#2ed573', '#1e90ff', '#ffa502', '#9b59b6', '#ff6b81'];
-            let i = 0;
-            let interval = setInterval(() => {
-                document.body.style.backgroundColor = colors[i % colors.length];
-                i++;
-                if (i > 10) {
-                    clearInterval(interval);
-                    document.body.style.backgroundColor = '#08080a';
-                }
-            }, 300);
-        }
-
-        function updateStatsDisplay() {
-            let allStats = getRoomStats();
-            let stats = allStats[activeRoom];
-
-            document.getElementById('statsTitle').innerText = `STATISTICHE STANZA: ${activeRoom.toUpperCase()}`;
-            document.getElementById('statDay').innerText = stats.day;
-            document.getElementById('statWeek').innerText = stats.week;
-            document.getElementById('statMonth').innerText = stats.month;
-            document.getElementById('statYear').innerText = stats.year;
-
-            document.getElementById('countPorta').innerText = stats.porta || 0;
-            document.getElementById('countCuore').innerText = stats.cuore || 0;
-            document.getElementById('countMagia').innerText = stats.magia || 0;
-            document.getElementById('countGlobalTotal').innerText = getGlobalTotal();
-        }
-
-        function sendSystemNotification(title, body) {
-            if ("Notification" in window && Notification.permission === "granted") {
-                try {
-                    navigator.serviceWorker.ready.then(function(registration) {
-                        registration.showNotification(title, {
-                            body: body,
-                            icon: './icon-192.png',
-                            vibrate: [200, 100, 200]
-                        });
-                    });
-                } catch (e) {
-                    new Notification(title, { body: body });
-                }
-            }
-        }
-
-        function updateRoomListener() {
-            saveConfig();
-
-            if (currentRoomRef) {
-                currentRoomRef.off();
-            }
-
-            currentRoomRef = db.ref('rooms/' + activeRoom);
-            currentRoomRef.on('value', (snapshot) => {
-                const data = snapshot.val();
-                let myName = document.getElementById('usernameInput').value.trim() || 'Luca';
-                
-                if (data && data.timestamp > Date.now() - 3000 && data.sender !== myName) {
-                    playSound(data.sound || 'porta');
-                    
-                    let alertBox = document.getElementById('senderAlert');
-                    let name = data.sender || 'Qualcuno';
-                    let icon = data.sound === 'cuore' ? '💓' : (data.sound === 'magia' ? '✨' : '🚪');
-                    let countText = data.count ? `\n(${data.sound.toUpperCase()} #${data.count})` : '';
-
-                    alertBox.innerText = `TOC-TOC da ${name}! ${icon}${countText}`;
-                    alertBox.classList.add('show');
-
-                    sendSystemNotification("TOC-TOC!", `${name} ti ha inviato un segnale nella stanza "${activeRoom}"! 🚪💓`);
-                    
-                    setTimeout(() => {
-                        alertBox.classList.remove('show');
-                    }, 2800);
-                }
-            });
-        }
-
-        function shareOnWhatsApp() {
-            const shareText = `Entra nella stanza "${activeRoom}" su Toc-Toc per scambiarci i segnali! Clicca qui: https://lucaandrea18.github.io/toctoc/`;
-            
-            if (navigator.share) {
-                navigator.share({
-                    title: 'Toc-Toc',
-                    text: shareText,
-                    url: 'https://lucaandrea18.github.io/toctoc/'
-                }).catch(() => {});
-            } else {
-                window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(shareText)}`, '_blank');
-            }
-        }
-
-        renderRooms();
-        updateRoomListener();
-        updateStatsDisplay();
-    </script>
-</body>
-</html>
+            width: 145px;
+            height: 145px;
+            border-radius: 50
