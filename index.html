@@ -180,29 +180,43 @@
             width: 100%;
         }
 
-        .quick-msg-row {
-            display: flex;
+        /* Griglia Messaggi Veloci (3 per riga, caratteri più grandi) */
+        .quick-msg-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
             gap: 4px;
             width: 100%;
-            overflow-x: auto;
+            max-height: 90px;
+            overflow-y: auto;
             padding: 2px 0;
         }
 
         .quick-msg-btn {
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: #ccc;
-            padding: 5px 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            color: #ddd;
+            padding: 8px 4px;
             border-radius: 8px;
-            font-size: 10px;
-            white-space: nowrap;
+            font-size: 11px;
+            font-weight: bold;
+            text-align: center;
             cursor: pointer;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
 
         .quick-msg-btn.selected {
             background: var(--accent-color);
             color: #fff;
             border-color: var(--accent-color);
+        }
+
+        /* Sezione per creare messaggi personalizzati */
+        .custom-msg-box {
+            display: flex;
+            gap: 4px;
+            width: 100%;
         }
 
         .sound-btn, .toggle-btn, .premium-btn, .reset-btn, .whatsapp-btn-side {
@@ -245,30 +259,31 @@
             color: #ff6b6b;
         }
 
+        /* Storico più grande */
         .history-box {
             width: 100%;
             background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.15);
             border-radius: 10px;
-            padding: 6px;
-            font-size: 10px;
-            max-height: 55px;
+            padding: 8px;
+            font-size: 11px;
+            max-height: 95px;
             overflow-y: auto;
         }
 
         .history-title {
             font-weight: bold;
-            color: #aaa;
-            margin-bottom: 2px;
+            color: var(--accent-color);
+            margin-bottom: 3px;
             text-transform: uppercase;
         }
 
         .history-item {
             display: flex;
             justify-content: space-between;
-            color: #ddd;
-            border-bottom: 1px dotted rgba(255, 255, 255, 0.1);
-            padding: 2px 0;
+            color: #eee;
+            border-bottom: 1px dotted rgba(255, 255, 255, 0.15);
+            padding: 3px 0;
         }
 
         .tap-container {
@@ -461,12 +476,13 @@
             <button class="sound-btn" data-sound="magia">✨ Magia</button>
         </div>
 
-        <div class="quick-msg-row">
-            <button class="quick-msg-btn" data-msg="👋 Toc Toc!">👋 Toc Toc!</button>
-            <button class="quick-msg-btn" data-msg="🚗 Sto arrivando">🚗 Sto arrivando</button>
-            <button class="quick-msg-btn" data-msg="🍝 Cena pronta!">🍝 Cena pronta!</button>
-            <button class="quick-msg-btn" data-msg="❤️ Ti voglio bene">❤️ Ti voglio bene</button>
-            <button class="quick-msg-btn" data-msg="📞 Chiama">📞 Chiama</button>
+        <!-- Griglia Messaggi Veloci (3 per riga) -->
+        <div class="quick-msg-grid" id="quickMsgGrid"></div>
+
+        <!-- Casella per creare nuovi messaggi personalizzati -->
+        <div class="custom-msg-box">
+            <input type="text" id="customMsgInput" class="main-input" placeholder="Scrivi nuovo messaggio rapido...">
+            <button class="add-btn" id="addCustomMsgBtn" style="font-size: 16px;">+</button>
         </div>
 
         <div class="history-box">
@@ -513,11 +529,36 @@
         let activeRoom = localStorage.getItem('toctoc_room') || 'generale';
         let storedName = localStorage.getItem('toctoc_username') || '';
 
+        let defaultMessages = ["👋 Toc Toc!", "🚗 Sto arrivando", "🍝 Cena pronta!", "❤️ Ti voglio bene", "📞 Chiama", "🕒 Ho fatto tardi", "❌ Non ho fame", "👍 Ok va bene"];
+        let savedCustomMsgs = JSON.parse(localStorage.getItem('toctoc_custom_msgs')) || [];
+        let allMessages = [...defaultMessages, ...savedCustomMsgs];
+
         document.getElementById('usernameInput').value = storedName;
 
         document.getElementById('usernameInput').addEventListener('input', function() {
             localStorage.setItem('toctoc_username', this.value.trim());
         });
+
+        function renderQuickMessages() {
+            const grid = document.getElementById('quickMsgGrid');
+            grid.innerHTML = '';
+            allMessages.forEach(msg => {
+                let btn = document.createElement('button');
+                btn.className = `quick-msg-btn ${currentMsg === msg ? 'selected' : ''}`;
+                btn.innerText = msg;
+                btn.onclick = () => {
+                    if (currentMsg === msg) {
+                        currentMsg = '';
+                        btn.classList.remove('selected');
+                    } else {
+                        document.querySelectorAll('.quick-msg-btn').forEach(b => b.classList.remove('selected'));
+                        currentMsg = msg;
+                        btn.classList.add('selected');
+                    }
+                };
+                grid.appendChild(btn);
+            });
+        }
 
         function initAudioContext() {
             if (!audioCtx) {
@@ -563,25 +604,20 @@
         function playAndreaSpecialShow() {
             if (!soundEnabled) return;
             initAudioContext();
-
             const shows = [
                 { title: "MJ: SMOOTH CRIMINAL", icon: "🕺", notes: [185, 277, 329, 369, 329, 277, 246, 277], tempo: 160, type: "sawtooth" },
                 { title: "MJ: BILLIE JEAN", icon: "🎩", notes: [220, 261, 329, 261, 220, 196, 220, 261], tempo: 170, type: "triangle" },
                 { title: "ARCADE RETRO GAME", icon: "👾", notes: [523, 659, 783, 1046, 880, 659, 783], tempo: 130, type: "square" },
                 { title: "HERO POWER RIFF", icon: "⚡", notes: [329, 392, 493, 523, 659, 783, 987], tempo: 140, type: "sawtooth" }
             ];
-
             let show = shows[andreaSongIndex % shows.length];
             andreaSongIndex++;
-
             showSpecialOverlay(show.icon, `SPECIALE ANDREA!\n${show.title}`);
-
             for (let l = 0; l < 3; l++) {
                 show.notes.forEach((freq, index) => {
                     setTimeout(() => playTone(freq, 0.12, show.type), (l * show.notes.length * show.tempo) + (index * show.tempo));
                 });
             }
-
             setTimeout(() => hideSpecialOverlay(), 6000);
         }
 
@@ -702,8 +738,9 @@
                 root.style.setProperty('--accent-color', '#ff4757');
                 root.style.setProperty('--accent-glow', 'rgba(255, 71, 87, 0.5)');
             } else if (room === 'andrea' || room === 'figlio') {
-                root.style.setProperty('--accent-color', '#2ed573');
-                root.style.setProperty('--accent-glow', 'rgba(46, 213, 115, 0.5)');
+                // Andrea non è più verde: ora usa un bel blu/ciano elettrico
+                root.style.setProperty('--accent-color', '#1e90ff');
+                root.style.setProperty('--accent-glow', 'rgba(30, 144, 255, 0.5)');
             } else if (room === 'sorella') {
                 root.style.setProperty('--accent-color', '#9b59b6');
                 root.style.setProperty('--accent-glow', 'rgba(155, 89, 182, 0.5)');
@@ -829,6 +866,7 @@
             renderRooms();
             updateStatsDisplay();
             renderHistory();
+            renderQuickMessages();
 
             setInterval(checkIncomingCloudSignals, 2000);
 
@@ -842,25 +880,24 @@
                 }
             });
 
+            // Creazione messaggio personalizzato
+            document.getElementById('addCustomMsgBtn').addEventListener('click', () => {
+                let customInput = document.getElementById('customMsgInput');
+                let newMsg = customInput.value.trim();
+                if (newMsg && !allMessages.includes(newMsg)) {
+                    savedCustomMsgs.push(newMsg);
+                    localStorage.setItem('toctoc_custom_msgs', JSON.stringify(savedCustomMsgs));
+                    allMessages = [...defaultMessages, ...savedCustomMsgs];
+                    customInput.value = '';
+                    renderQuickMessages();
+                }
+            });
+
             document.querySelectorAll('.sound-btn').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     currentSound = e.target.getAttribute('data-sound');
                     document.querySelectorAll('.sound-btn').forEach(b => b.classList.remove('active'));
                     e.target.classList.add('active');
-                });
-            });
-
-            document.querySelectorAll('.quick-msg-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    let msg = e.target.getAttribute('data-msg');
-                    if (currentMsg === msg) {
-                        currentMsg = '';
-                        e.target.classList.remove('selected');
-                    } else {
-                        document.querySelectorAll('.quick-msg-btn').forEach(b => b.classList.remove('selected'));
-                        currentMsg = msg;
-                        e.target.classList.add('selected');
-                    }
                 });
             });
 
@@ -871,7 +908,7 @@
             });
 
             document.getElementById('whatsappBtn').addEventListener('click', () => {
-                const shareText = `Entra nella stanza "${activeRoom}" su Toc-Toc! Clicca qui: https://lucaandrea18.github.io/toctoc/`;
+                const shareText = `Entra nella stanza "${activeRoom}" su Toc-Toc per scambiarci i segnali! Clicca qui: https://lucaandrea18.github.io/toctoc/`;
                 window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(shareText)}`, '_blank');
             });
 
@@ -923,13 +960,11 @@
                 localStorage.setItem('toctoc_room_stats', JSON.stringify(allStats));
                 updateStatsDisplay();
 
-                // Traguardo 100 tocchi (Esplosione, coriandoli, arcobaleno, applausi)
                 if (stats.total % 100 === 0) {
                     triggerButtonExplosion();
                     spawnConfetti();
                     triggerRainbowEffect();
 
-                    // Traguardo 200 tocchi (Show speciali dedicati)
                     if (stats.total % 200 === 0) {
                         if (activeRoom === 'andrea' || activeRoom === 'figlio') {
                             playAndreaSpecialShow();
